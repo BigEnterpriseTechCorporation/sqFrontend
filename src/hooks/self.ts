@@ -4,7 +4,7 @@ interface data {
 	token: string
 }
 
-export default async function useSelf(formData: {token:token}): Promise<data> {
+export default async function self(formData: {token:token}): Promise<data> {
 	try {
 		const response = await fetch(`${process.env.NEXT_PUBLIC_HOST}/Account/self`, {
 			method: 'GET',
