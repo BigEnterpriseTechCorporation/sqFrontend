@@ -24,3 +24,13 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/*
+React-split requirements
+*/
+.gutter:hover {
+  background-color: #666666;
+}
+.gutter.gutter-horizontal {
+  cursor: col-resize;
+}
