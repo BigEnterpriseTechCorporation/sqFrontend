@@ -11,5 +11,5 @@ export default function Home() {
           <Link href={"/unit"}>Unit</Link>
       </div>
     </div>
-  )
+  ) 
 }
