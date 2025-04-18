@@ -4,7 +4,7 @@ interface data {
 	token: string
 }
 
-export default async function useLogin(formData: userLogin): Promise<data> {
+export default async function login(formData: userLogin): Promise<data> {
 	try {
 		const response = await fetch(`${process.env.NEXT_PUBLIC_HOST}/Account/login`, {
 			method: 'POST',

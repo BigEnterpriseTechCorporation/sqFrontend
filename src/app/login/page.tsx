@@ -1,7 +1,7 @@
 "use client"
 import Link from "next/link";
 import { FormEvent } from "react";
-import useLogin from "@/hooks/useLogin";
+import login from "@/hooks/login";
 
 export default function Login() {
     async function onSubmit(event: FormEvent<HTMLFormElement>) {
@@ -12,7 +12,7 @@ export default function Login() {
         const password = formData.get("password") as string
 
         try {
-            await useLogin({ userName, password })
+            await login({ userName, password })
             // Redirect to home page on success
             window.location.href = "/"
         } catch (error) {

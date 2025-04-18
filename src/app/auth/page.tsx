@@ -1,7 +1,7 @@
 "use client"
 import Link from "next/link";
 import {FormEvent} from "react";
-import register from "@/hooks/useRegister";
+import register from "@/hooks/register";
 
 export default function Auth(){
     async function onSubmit (event: FormEvent<HTMLFormElement>) {
