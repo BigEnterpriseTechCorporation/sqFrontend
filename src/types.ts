@@ -3,6 +3,11 @@ export interface User{
   fullName:string
   userName:string
   role:string
+  registeredAt:string
+  isActive?:boolean
+  solvedExercisesCount?:number
+  totalAttemptsCount?:number
+  likedUnitsCount?:number
 }
 
 export type checkType = 0 | 1 |2
@@ -35,8 +40,11 @@ export interface Exercise {
   checkType:checkType
   checkQueryInsert:string
   checkQuerySelect:string
+  solutionQuery:string
   options:string
   queryParts:string
+  position?:number
+  unit?:Unit
 }
 
 export interface UnitWithExercises extends Unit{
