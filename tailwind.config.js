@@ -7,6 +7,7 @@ module.exports = {
             colors: {
 				bg1:"var(--color-bg1)",
 				bg2:"var(--color-bg2)",
+				bg3:"var(--color-bg3)",
             },
             backgroundColor:{
                 "light":"#FEF1C9"
@@ -29,6 +30,6 @@ module.exports = {
 			}
 		},
 	},
-	plugins: [],
+	plugins: [require('@tailwindcss/typography')],
 }
 
