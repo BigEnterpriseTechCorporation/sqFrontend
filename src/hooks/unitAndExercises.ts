@@ -15,7 +15,7 @@ export default async function unitAndExercises(formData: {token:token, id:string
                 ...unit,
                 exercises: Array.isArray(exercises) ? exercises : []
             };
-        } catch (error) {
+        } catch {
             // If we can't get exercises, return the unit with an empty exercises array
             console.warn(`Couldn't load exercises for unit ${formData.id}`);
             return {

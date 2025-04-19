@@ -1,18 +1,12 @@
 "use client"
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { API_URL } from '@/constants';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import Editor from '@monaco-editor/react';
 import ReactMarkdown from 'react-markdown';
-
-type Unit = {
-  id: string;
-  title: string;
-  description: string;
-};
 
 export default function EditUnit() {
   const router = useRouter();
@@ -29,11 +23,7 @@ export default function EditUnit() {
   const [formError, setFormError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
 
-  useEffect(() => {
-    fetchUnit();
-  }, [unitId]);
-
-  async function fetchUnit() {
+  const fetchUnit = useCallback(async () => {
     setLoading(true);
     setError('');
     
@@ -59,7 +49,11 @@ export default function EditUnit() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [unitId, router]);
+
+  useEffect(() => {
+    fetchUnit();
+  }, [fetchUnit]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;

@@ -5,7 +5,7 @@ declare module '@antonz/sqlean' {
     };
     oo1: {
       DB: new () => {
-        exec(sql: string | { sql: string; rowMode: string; resultRows: any[] }): void;
+        exec(sql: string | { sql: string; rowMode: string; resultRows: unknown[] }): void;
       };
     };
   }

@@ -17,7 +17,7 @@ export default async function allExercises(formData: {token:token}): Promise<Exe
                 if (Array.isArray(exercises)) {
                     allExercises = [...allExercises, ...exercises];
                 }
-            } catch (err) {
+            } catch {
                 console.warn(`Failed to fetch exercises for unit ${unit.id}`);
                 // Continue with the next unit if this one fails
             }

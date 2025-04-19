@@ -77,7 +77,7 @@ export default function AdminLayout({
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-4">Redirecting...</h1>
-          <p className="text-gray-600">You don't have permission to access this area.</p>
+          <p className="text-gray-600">You don&apos;t have permission to access this area.</p>
         </div>
       </div>
     );
@@ -140,7 +140,7 @@ export default function AdminLayout({
           <header className="bg-white shadow-sm h-16 flex items-center px-6 sticky top-0 z-10">
             <div className="flex-1">
               <h2 className="text-xl font-semibold text-gray-800">
-                {navigation.find(item => isActive(item.href))?.name || 'Admin'}
+                {navigation.find(item => isActive(item.href))?.name || `Admin`}
               </h2>
             </div>
             <div>

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { API_URL } from '@/constants';
 import { useRouter } from 'next/navigation';
@@ -93,27 +93,35 @@ export default function UsersAdmin() {
 
   // Sort users
   useEffect(() => {
-    const sorted = [...filteredUsers].sort((a, b) => {
-      if (sortField === 'registeredAt') {
-        const dateA = new Date(a.registeredAt || new Date()).getTime();
-        const dateB = new Date(b.registeredAt || new Date()).getTime();
-        return sortDirection === 'asc' ? dateA - dateB : dateB - dateA;
-      } else if (sortField === 'solvedExercisesCount') {
-        const countA = a.solvedExercisesCount || 0;
-        const countB = b.solvedExercisesCount || 0;
-        return sortDirection === 'asc' ? countA - countB : countB - countA;
-      } else {
-        const valueA = String(a[sortField] || '').toLowerCase();
-        const valueB = String(b[sortField] || '').toLowerCase();
-        
-        return sortDirection === 'asc' 
-          ? valueA.localeCompare(valueB)
-          : valueB.localeCompare(valueA);
-      }
-    });
+    if (filteredUsers.length === 0) return;
     
-    setFilteredUsers(sorted);
-  }, [sortField, sortDirection]);
+    // Only apply sorting logic if sorting parameters change
+    if (sortField && sortDirection) {
+      const sorted = [...filteredUsers].sort((a, b) => {
+        if (sortField === 'registeredAt') {
+          const dateA = new Date(a.registeredAt || new Date()).getTime();
+          const dateB = new Date(b.registeredAt || new Date()).getTime();
+          return sortDirection === 'asc' ? dateA - dateB : dateB - dateA;
+        } else if (sortField === 'solvedExercisesCount') {
+          const countA = a.solvedExercisesCount || 0;
+          const countB = b.solvedExercisesCount || 0;
+          return sortDirection === 'asc' ? countA - countB : countB - countA;
+        } else {
+          const valueA = String(a[sortField] || '').toLowerCase();
+          const valueB = String(b[sortField] || '').toLowerCase();
+          
+          return sortDirection === 'asc' 
+            ? valueA.localeCompare(valueB)
+            : valueB.localeCompare(valueA);
+        }
+      });
+      
+      // Only update if sorted array is different
+      if (JSON.stringify(sorted) !== JSON.stringify(filteredUsers)) {
+        setFilteredUsers(sorted);
+      }
+    }
+  }, [sortField, sortDirection, filteredUsers]);
 
   // Handle role change
   const handleRoleChange = (userId: string, userName: string, newRole: string) => {

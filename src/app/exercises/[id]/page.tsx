@@ -11,20 +11,19 @@ import Navigation from "@/components/navigation";
 
 interface QueryResult {
   columns: string[];
-  rows: any[];
+  rows: Record<string, string | number | boolean | null>[];
   error?: string;
 }
 
 interface TableInfo {
   name: string;
   columns: string[];
-  sampleData: any[];
+  sampleData: Record<string, string | number | boolean | null>[];
 }
 
 declare global {
   interface Window {
-    // eslint-disable-next-line
-    sqlite3InitModule: any;
+    sqlite3InitModule: () => Promise<unknown>;
   }
 }
 
@@ -35,8 +34,6 @@ export default function ExercisesPage() {
   const [activeTab, setActiveTab] = useState<'results' | 'tables'>('results');
   const [tables, setTables] = useState<TableInfo[]>([]);
   const [exercise, setExercise] = useState<Exercise | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
   const [dbManager] = useState(() => new DatabaseManager());
 
   useEffect(() => {
@@ -44,20 +41,18 @@ export default function ExercisesPage() {
       try {
         const token = localStorage.getItem('token');
         if (!token) {
-          setError('No authentication token found');
+          console.error('No authentication token found');
           return;
         }
         const id = params.id as string;
         if (!id) {
-          setError('No unit ID provided');
+          console.error('No unit ID provided');
           return;
         }
         const response = await exerciseFetch({ token, id });
         setExercise(response);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to fetch unit and exercises');
-      } finally {
-        setLoading(false);
+        console.error(err instanceof Error ? err.message : 'Failed to fetch unit and exercises');
       }
     };
 
@@ -74,7 +69,7 @@ export default function ExercisesPage() {
         await dbManager.initialize(exercise);
         setTables(dbManager.getTables());
       } catch (error) {
-        setError(error instanceof Error ? error.message : 'Failed to initialize database');
+        console.error(error instanceof Error ? error.message : 'Failed to initialize database');
       }
     };
 

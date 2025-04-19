@@ -4,13 +4,14 @@ import { useState, useEffect } from "react"
 import { User } from "@/types"
 import self from "@/hooks/self"
 import userProgress, { UserProgress } from "@/hooks/userProgress"
-import useUpdateUsername from "./hooks/useUpdateUsername"
+import useUpdateUsername from "@/hooks/useUpdateUsername"
+import useUpdateFullName from "@/hooks/useUpdateFullName"
 import Navigation from "@/components/navigation"
 import Footer from "@/components/footer"
-import UserCard from "./components/UserCard"
-import ProgressDisplay from "./components/ProgressDisplay"
-import LoadingSpinner from "./components/LoadingSpinner"
-import ErrorDisplay from "./components/ErrorDisplay"
+import UserCard from "@/components/Profile/UserCard"
+import ProgressDisplay from "@/components/Profile/ProgressDisplay"
+import LoadingSpinner from "@/components/Profile/LoadingSpinner"
+import ErrorDisplay from "@/components/Profile/ErrorDisplay"
 
 export default function ProfilePage() {
   // User data state
@@ -22,8 +23,9 @@ export default function ProfilePage() {
   const [progressLoading, setProgressLoading] = useState(true)
   const [progress, setProgress] = useState<UserProgress | null>(null)
   
-  // Custom hook for updating username
+  // Custom hooks for updating user information
   const { updateUsername } = useUpdateUsername()
+  const { updateFullName } = useUpdateFullName()
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -92,13 +94,24 @@ export default function ProfilePage() {
     }
   }
   
-  const handleUpdateUsername = async (newUsername: string, password: string) => {
+  const handleUpdateUsername = async (newUsername: string, password: string): Promise<User> => {
     try {
       const updatedUser = await updateUsername(newUsername, password)
       setUser(updatedUser)
       return updatedUser
     } catch (error) {
       // Error is handled by the useUpdateUsername hook and UserCard component
+      throw error
+    }
+  }
+  
+  const handleUpdateFullName = async (newFullName: string, password: string): Promise<User> => {
+    try {
+      const updatedUser = await updateFullName(newFullName, password)
+      setUser(updatedUser)
+      return updatedUser
+    } catch (error) {
+      // Error is handled by the useUpdateFullName hook and UserCard component
       throw error
     }
   }
@@ -115,14 +128,15 @@ export default function ProfilePage() {
 
   // Main content
   return (
-    <div className="min-h-screen bg-pink-200 flex flex-col">
+    <div className="min-h-screen bg-bg1 flex flex-col">
       <Navigation />
       <div className="flex justify-center py-16 px-4 flex-grow">
         <div className="w-full max-w-4xl">
           {user && (
             <UserCard 
               user={user} 
-              onUpdateUsername={handleUpdateUsername} 
+              onUpdateUsername={handleUpdateUsername}
+              onUpdateFullName={handleUpdateFullName}
             />
           )}
           

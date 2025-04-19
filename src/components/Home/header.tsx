@@ -1,4 +1,3 @@
-import Link from "next/link";
 import WaveYellow from "@/assets/icons/wave-yellow.svg"
 import serverImage from "@/assets/images/server.png"
 import Image from "next/image"

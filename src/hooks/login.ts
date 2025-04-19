@@ -1,4 +1,4 @@
-import { userLogin, token } from "@/types"
+import { token } from "@/types"
 import { API } from '@/utils/api'
 
 interface LoginResponse {

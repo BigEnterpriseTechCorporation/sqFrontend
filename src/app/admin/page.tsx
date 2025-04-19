@@ -1,8 +1,7 @@
 "use client"
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import UnitTitle from '@/components/unitTitle';
 
 // Types
 interface Stats {
@@ -27,35 +26,7 @@ export default function AdminPanel() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const storedToken = localStorage.getItem('token');
-    if (!storedToken) {
-      router.push('/');
-      return;
-    }
-    
-    try {
-      const payload = storedToken.split('.')[1];
-      const decodedPayload = JSON.parse(atob(payload));
-      
-      if (decodedPayload.role !== 'Admin') {
-        router.push('/');
-        return;
-      }
-      
-      setToken(storedToken);
-    } catch (error) {
-      router.push('/');
-    }
-  }, [router]);
-  
-  useEffect(() => {
-    if (token) {
-      fetchData();
-    }
-  }, [token]);
-  
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     if (!token) return;
     
     setLoading(true);
@@ -74,7 +45,35 @@ export default function AdminPanel() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [token]);
+
+  useEffect(() => {
+    const storedToken = localStorage.getItem('token');
+    if (!storedToken) {
+      router.push('/');
+      return;
+    }
+    
+    try {
+      const payload = storedToken.split('.')[1];
+      const decodedPayload = JSON.parse(atob(payload));
+      
+      if (decodedPayload.role !== 'Admin') {
+        router.push('/');
+        return;
+      }
+      
+      setToken(storedToken);
+    } catch {
+      router.push('/');
+    }
+  }, [router]);
+  
+  useEffect(() => {
+    if (token) {
+      fetchData();
+    }
+  }, [token, fetchData]);
 
   return (
     <main className="max-w-6xl mx-auto p-6">

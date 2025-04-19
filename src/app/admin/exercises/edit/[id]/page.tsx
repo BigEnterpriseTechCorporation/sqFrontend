@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import axios from 'axios';
-import { Exercise, Unit, difficulty, exerciseType, checkType } from '@/types';
+import { Exercise, Unit } from '@/types';
 import Editor from '@monaco-editor/react';
 
 const API_URL = 'https://rpi.tail707b9c.ts.net/api/v1';
@@ -27,7 +27,7 @@ function ArrayEditor({ value, onChange, placeholder }: ArrayEditorProps) {
       const parsedValue = value ? JSON.parse(value) : [];
       setItems(Array.isArray(parsedValue) ? parsedValue : []);
       setError('');
-    } catch (err) {
+    } catch {
       setError('Invalid JSON format');
       setItems([]);
     }
@@ -153,7 +153,7 @@ function OptionsEditor({ value, onChange }: OptionsEditorProps) {
       const parsedValue = value ? JSON.parse(value) : [];
       setOptions(Array.isArray(parsedValue) ? parsedValue : []);
       setError('');
-    } catch (err) {
+    } catch {
       setError('Invalid JSON format');
       setOptions([]);
     }
@@ -346,7 +346,7 @@ export default function EditExercise() {
   // Handle input change
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    let parsedValue: any = value;
+    let parsedValue: string | number = value;
     
     // Parse numeric values appropriately
     if (['difficulty', 'type', 'checkType'].includes(name)) {

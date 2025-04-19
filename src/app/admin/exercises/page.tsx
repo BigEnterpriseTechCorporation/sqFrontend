@@ -3,9 +3,8 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { API_URL } from '@/constants';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Exercise, Unit, difficulty, exerciseType, checkType } from '@/types';
+import { Exercise, Unit } from '@/types';
 import Editor from '@monaco-editor/react';
 
 // Component for editing JSON arrays visually
@@ -27,7 +26,7 @@ function ArrayEditor({ value, onChange, placeholder }: ArrayEditorProps) {
       const parsedValue = value ? JSON.parse(value) : [];
       setItems(Array.isArray(parsedValue) ? parsedValue : []);
       setError('');
-    } catch (err) {
+    } catch {
       setError('Invalid JSON format');
       setItems([]);
     }
@@ -153,7 +152,7 @@ function OptionsEditor({ value, onChange }: OptionsEditorProps) {
       const parsedValue = value ? JSON.parse(value) : [];
       setOptions(Array.isArray(parsedValue) ? parsedValue : []);
       setError('');
-    } catch (err) {
+    } catch {
       setError('Invalid JSON format');
       setOptions([]);
     }
@@ -335,7 +334,7 @@ export default function ExercisesAdmin() {
                 headers: { Authorization: `Bearer ${token}` }
               });
               return { ...exercise, unit: unitResponse.data };
-            } catch (err) {
+            } catch {
               return exercise;
             }
           })
@@ -383,7 +382,7 @@ export default function ExercisesAdmin() {
   // Handle input change for create form
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    let parsedValue: any = value;
+    let parsedValue: string | number = value;
     
     // Parse numeric values appropriately
     if (['difficulty', 'type', 'checkType'].includes(name)) {
@@ -454,8 +453,8 @@ export default function ExercisesAdmin() {
         setSelectedTab('list');
         setSuccessMessage('');
       }, 2000);
-    } catch (err) {
-      console.error('Error creating exercise:', err);
+    } catch (error) {
+      console.error('Error creating exercise:', error);
       setCreateError('Failed to create exercise. Please try again.');
     } finally {
       setIsCreating(false);
@@ -487,8 +486,8 @@ export default function ExercisesAdmin() {
       setTimeout(() => {
         setSuccessMessage('');
       }, 2000);
-    } catch (err) {
-      console.error('Error deleting exercise:', err);
+    } catch (_) {
+      console.error('Error deleting exercise:', _);
       setError('Failed to delete exercise. Please try again.');
     }
   };

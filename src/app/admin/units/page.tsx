@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { API_URL } from '@/constants';
 import { useRouter } from 'next/navigation';
@@ -28,11 +28,7 @@ export default function UnitsAdmin() {
   const [formError, setFormError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
 
-  useEffect(() => {
-    fetchUnits();
-  }, []);
-
-  async function fetchUnits() {
+  const fetchUnits = useCallback(async () => {
     setLoading(true);
     setError('');
     
@@ -54,7 +50,11 @@ export default function UnitsAdmin() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [router]);
+
+  useEffect(() => {
+    fetchUnits();
+  }, [fetchUnits]);
 
   const filteredUnits = units.filter(unit => 
     unit.title.toLowerCase().includes(searchTerm.toLowerCase()) ||

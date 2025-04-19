@@ -5,7 +5,7 @@ import { Exercise } from "@/types";
  */
 interface QueryResult {
   columns: string[];    // Names of the columns in the result
-  rows: any[];         // Array of row objects
+  rows: Record<string, string | number | boolean | null>[];  // Array of row objects
   error?: string;      // Error message if the query failed
 }
 
@@ -15,7 +15,31 @@ interface QueryResult {
 interface TableInfo {
   name: string;        // Name of the table
   columns: string[];   // Names of the columns in the table
-  sampleData: any[];   // Sample rows from the table (limited to 5)
+  sampleData: Record<string, string | number | boolean | null>[];  // Sample rows from the table (limited to 5)
+}
+
+/**
+ * SQLite API interface
+ */
+interface SQLiteAPI {
+  capi: {
+    sqlite3_libversion: () => string;
+  };
+  oo1: {
+    DB: new () => SQLiteDB;
+  };
+}
+
+/**
+ * SQLite Database interface
+ */
+interface SQLiteDB {
+  exec: (params: {
+    sql: string;
+    rowMode: string;
+    resultRows?: Record<string, unknown>[];
+  }) => void;
+  close: () => void;
 }
 
 /**
@@ -23,8 +47,8 @@ interface TableInfo {
  * Handles database initialization, query execution, and table information retrieval
  */
 export class DatabaseManager {
-  private sqlite3: any;        // SQLite module instance
-  private db: any;             // Database connection
+  private sqlite3: SQLiteAPI | null = null;  // SQLite module instance
+  private db: SQLiteDB | null = null;        // Database connection
   private exercise: Exercise | null = null;  // Current exercise data
 
   constructor() {}
@@ -54,7 +78,12 @@ export class DatabaseManager {
       script.onload = async () => {
         try {
           // Initialize SQLite module
-          this.sqlite3 = await window.sqlite3InitModule({
+          this.sqlite3 = await (window as Window & { 
+            sqlite3InitModule: (options: {
+              print: (msg: string) => void;
+              printErr: (msg: string) => void;
+            }) => Promise<SQLiteAPI> 
+          }).sqlite3InitModule({
             print: console.log,
             printErr: console.error,
           });
@@ -66,7 +95,7 @@ export class DatabaseManager {
           // Create and initialize database with exercise schema
           this.db = new this.sqlite3.oo1.DB();
           if (this.exercise?.schema) {
-            this.db.exec(this.exercise.schema);
+            this.db.exec({ sql: this.exercise.schema, rowMode: "object" });
             resolve();
           } else {
             reject(new Error('No database schema provided'));
@@ -98,11 +127,19 @@ export class DatabaseManager {
 
     try {
       // Execute query and collect results
-      const rows: any[] = [];
-      this.db.exec({
+      const rows: Record<string, string | number | boolean | null>[] = [];
+      
+      // TypeScript doesn't maintain null check through the whole function,
+      // so we need to ensure db is still not null here
+      const db = this.db;
+      if (!db) {
+        return { columns: [], rows: [], error: 'Database not initialized' };
+      }
+      
+      db.exec({
         sql: query,
         rowMode: "object",
-        resultRows: rows,
+        resultRows: rows as unknown as Record<string, unknown>[],
       });
 
       // Handle empty result set
@@ -134,8 +171,8 @@ export class DatabaseManager {
     try {
       // Get list of all tables
       const tablesQuery = "SELECT name FROM sqlite_master WHERE type='table'";
-      const tables: any[] = [];
-      this.db.exec({
+      const tables: Record<string, unknown>[] = [];
+      this.db?.exec({
         sql: tablesQuery,
         rowMode: "object",
         resultRows: tables,
@@ -143,11 +180,15 @@ export class DatabaseManager {
 
       // For each table, get its structure and sample data
       return tables.map(table => {
-        const tableName = table.name;
+        const tableName = table.name as string;
         
         // Get column information
         const columnsQuery = `PRAGMA table_info(${tableName})`;
-        const columns: any[] = [];
+        const columns: Record<string, unknown>[] = [];
+        
+        // Ensure db is not null before calling exec
+        if (!this.db) return { name: tableName, columns: [], sampleData: [] };
+        
         this.db.exec({
           sql: columnsQuery,
           rowMode: "object",
@@ -156,16 +197,16 @@ export class DatabaseManager {
 
         // Get sample data (first 5 rows)
         const sampleQuery = `SELECT * FROM ${tableName} LIMIT 5`;
-        const sampleData: any[] = [];
+        const sampleData: Record<string, string | number | boolean | null>[] = [];
         this.db.exec({
           sql: sampleQuery,
           rowMode: "object",
-          resultRows: sampleData,
+          resultRows: sampleData as unknown as Record<string, unknown>[],
         });
 
         return {
           name: tableName,
-          columns: columns.map(col => col.name),
+          columns: columns.map(col => col.name as string),
           sampleData
         };
       });
