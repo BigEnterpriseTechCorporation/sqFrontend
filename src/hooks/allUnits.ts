@@ -1,25 +1,13 @@
-import {token} from "@/types";
-import {Unit} from "@/types";
+import { token } from "@/types";
+import { Unit } from "@/types";
+import { API } from "@/utils/api";
 
-export default async function allUnits(formData: {token:token}):Promise<Unit[]> {
+export default async function allUnits(formData: {token:token}): Promise<Unit[]> {
     try {
-        const response = await fetch(`https://rpi.tail707b9c.ts.net/api/v1/Units`, {
-            method: 'GET',
-            headers: {
-                "Authorization": `Bearer ${formData.token}`,
-                'accept': '*/*',
-                'Content-Type': 'application/json',
-            },
-        })
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`)
-        }
-
-        const data = await response.json()
-        return data
+        const units = await API.units.getAll<Unit[]>(formData.token);
+        return units;
     } catch (error) {
-        console.error('Self info error:', error)
-        throw error
+        console.error('Units fetch error:', error);
+        throw error;
     }
 }
