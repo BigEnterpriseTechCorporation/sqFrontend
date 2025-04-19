@@ -4,8 +4,279 @@ import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import axios from 'axios';
 import { Exercise, Unit, difficulty, exerciseType, checkType } from '@/types';
+import Editor from '@monaco-editor/react';
 
 const API_URL = 'https://rpi.tail707b9c.ts.net/api/v1';
+
+// Component for editing JSON arrays visually
+interface ArrayEditorProps {
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+}
+
+function ArrayEditor({ value, onChange, placeholder }: ArrayEditorProps) {
+  // Parse the JSON string to an array, defaulting to empty array if invalid
+  const [items, setItems] = useState<string[]>([]);
+  const [newItem, setNewItem] = useState('');
+  const [error, setError] = useState('');
+
+  // Parse the JSON string on component mount or when value changes
+  useEffect(() => {
+    try {
+      const parsedValue = value ? JSON.parse(value) : [];
+      setItems(Array.isArray(parsedValue) ? parsedValue : []);
+      setError('');
+    } catch (err) {
+      setError('Invalid JSON format');
+      setItems([]);
+    }
+  }, [value]);
+
+  // Update the parent component with the new JSON string
+  const updateParent = (updatedItems: string[]) => {
+    setItems(updatedItems);
+    onChange(JSON.stringify(updatedItems));
+  };
+
+  const addItem = () => {
+    if (newItem.trim()) {
+      const updatedItems = [...items, newItem.trim()];
+      updateParent(updatedItems);
+      setNewItem('');
+    }
+  };
+
+  const removeItem = (index: number) => {
+    const updatedItems = items.filter((_, i) => i !== index);
+    updateParent(updatedItems);
+  };
+
+  const moveItem = (index: number, direction: 'up' | 'down') => {
+    if (
+      (direction === 'up' && index === 0) ||
+      (direction === 'down' && index === items.length - 1)
+    ) {
+      return;
+    }
+
+    const newIndex = direction === 'up' ? index - 1 : index + 1;
+    const updatedItems = [...items];
+    [updatedItems[index], updatedItems[newIndex]] = [updatedItems[newIndex], updatedItems[index]];
+    updateParent(updatedItems);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      addItem();
+    }
+  };
+
+  return (
+    <div className="space-y-2">
+      {error && <p className="text-red-500 text-sm">{error}</p>}
+      
+      <div className="flex items-center space-x-2">
+        <input
+          type="text"
+          value={newItem}
+          onChange={(e) => setNewItem(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder={placeholder || "Add new item..."}
+          className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        <button
+          type="button"
+          onClick={addItem}
+          className="px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          Add
+        </button>
+      </div>
+      
+      {items.length > 0 ? (
+        <ul className="border border-gray-200 rounded-md divide-y">
+          {items.map((item, index) => (
+            <li key={index} className="px-4 py-2 flex items-center justify-between">
+              <span className="font-mono">{item}</span>
+              <div className="flex space-x-2">
+                <button
+                  type="button"
+                  onClick={() => moveItem(index, 'up')}
+                  disabled={index === 0}
+                  className={`text-gray-500 hover:text-gray-700 ${index === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                >
+                  ↑
+                </button>
+                <button
+                  type="button"
+                  onClick={() => moveItem(index, 'down')}
+                  disabled={index === items.length - 1}
+                  className={`text-gray-500 hover:text-gray-700 ${index === items.length - 1 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                >
+                  ↓
+                </button>
+                <button
+                  type="button"
+                  onClick={() => removeItem(index)}
+                  className="text-red-500 hover:text-red-700"
+                >
+                  ×
+                </button>
+              </div>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="text-gray-500 italic">No items added yet</p>
+      )}
+    </div>
+  );
+}
+
+// Component for advanced JSON array editing with key-value pairs
+interface OptionsEditorProps {
+  value: string;
+  onChange: (value: string) => void;
+}
+
+function OptionsEditor({ value, onChange }: OptionsEditorProps) {
+  // Parse the JSON string to an array of objects, defaulting to empty array if invalid
+  const [options, setOptions] = useState<{ text: string, isCorrect: boolean }[]>([]);
+  const [newOption, setNewOption] = useState('');
+  const [error, setError] = useState('');
+
+  // Parse the JSON string on component mount or when value changes
+  useEffect(() => {
+    try {
+      const parsedValue = value ? JSON.parse(value) : [];
+      setOptions(Array.isArray(parsedValue) ? parsedValue : []);
+      setError('');
+    } catch (err) {
+      setError('Invalid JSON format');
+      setOptions([]);
+    }
+  }, [value]);
+
+  // Update the parent component with the new JSON string
+  const updateParent = (updatedOptions: { text: string, isCorrect: boolean }[]) => {
+    setOptions(updatedOptions);
+    onChange(JSON.stringify(updatedOptions));
+  };
+
+  const addOption = () => {
+    if (newOption.trim()) {
+      const updatedOptions = [...options, { text: newOption.trim(), isCorrect: false }];
+      updateParent(updatedOptions);
+      setNewOption('');
+    }
+  };
+
+  const removeOption = (index: number) => {
+    const updatedOptions = options.filter((_, i) => i !== index);
+    updateParent(updatedOptions);
+  };
+
+  const toggleCorrect = (index: number) => {
+    const updatedOptions = [...options];
+    updatedOptions[index] = {
+      ...updatedOptions[index],
+      isCorrect: !updatedOptions[index].isCorrect,
+    };
+    updateParent(updatedOptions);
+  };
+
+  const moveOption = (index: number, direction: 'up' | 'down') => {
+    if (
+      (direction === 'up' && index === 0) ||
+      (direction === 'down' && index === options.length - 1)
+    ) {
+      return;
+    }
+
+    const newIndex = direction === 'up' ? index - 1 : index + 1;
+    const updatedOptions = [...options];
+    [updatedOptions[index], updatedOptions[newIndex]] = [updatedOptions[newIndex], updatedOptions[index]];
+    updateParent(updatedOptions);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      addOption();
+    }
+  };
+
+  return (
+    <div className="space-y-2">
+      {error && <p className="text-red-500 text-sm">{error}</p>}
+      
+      <div className="flex items-center space-x-2">
+        <input
+          type="text"
+          value={newOption}
+          onChange={(e) => setNewOption(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder="Add new option..."
+          className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        <button
+          type="button"
+          onClick={addOption}
+          className="px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          Add
+        </button>
+      </div>
+      
+      {options.length > 0 ? (
+        <ul className="border border-gray-200 rounded-md divide-y">
+          {options.map((option, index) => (
+            <li key={index} className="px-4 py-2 flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <input
+                  type="checkbox"
+                  checked={option.isCorrect}
+                  onChange={() => toggleCorrect(index)}
+                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                />
+                <span className={option.isCorrect ? "font-semibold" : ""}>{option.text}</span>
+              </div>
+              <div className="flex space-x-2">
+                <button
+                  type="button"
+                  onClick={() => moveOption(index, 'up')}
+                  disabled={index === 0}
+                  className={`text-gray-500 hover:text-gray-700 ${index === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                >
+                  ↑
+                </button>
+                <button
+                  type="button"
+                  onClick={() => moveOption(index, 'down')}
+                  disabled={index === options.length - 1}
+                  className={`text-gray-500 hover:text-gray-700 ${index === options.length - 1 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                >
+                  ↓
+                </button>
+                <button
+                  type="button"
+                  onClick={() => removeOption(index)}
+                  className="text-red-500 hover:text-red-700"
+                >
+                  ×
+                </button>
+              </div>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="text-gray-500 italic">No options added yet</p>
+      )}
+    </div>
+  );
+}
 
 export default function EditExercise() {
   const router = useRouter();
@@ -85,6 +356,11 @@ export default function EditExercise() {
     setFormData(prev => ({ ...prev, [name]: parsedValue }));
   };
 
+  // Handle Monaco editor change
+  const handleEditorChange = (name: string) => (value: string | undefined) => {
+    setFormData(prev => ({ ...prev, [name]: value || '' }));
+  };
+
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -151,6 +427,22 @@ export default function EditExercise() {
     { value: 1, label: 'Result' },
     { value: 2, label: 'Custom' }
   ];
+
+  // Helper to determine if a field should be shown based on exercise type
+  const shouldShowField = (field: string, exerciseType: number) => {
+    switch (field) {
+      case 'options':
+        return exerciseType === 0 || exerciseType === 1; // SelectAnswer or FillMissingWords
+      case 'queryParts':
+        return exerciseType === 1 || exerciseType === 2; // FillMissingWords or ConstructQuery
+      case 'solution':
+        return true; // Always show solution field
+      case 'checkQueries':
+        return exerciseType >= 3; // SimpleQuery or ComplexQuery
+      default:
+        return true;
+    }
+  };
 
   if (loading) {
     return (
@@ -283,15 +575,19 @@ export default function EditExercise() {
               <label htmlFor="schema" className="block text-sm font-medium text-gray-700 mb-1">
                 Schema (SQL)
               </label>
-              <textarea
-                id="schema"
-                name="schema"
-                value={formData.schema || ''}
-                onChange={handleInputChange}
-                rows={6}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono"
-                placeholder="CREATE TABLE..."
-              />
+              <div className="border border-gray-300 rounded-md overflow-hidden">
+                <Editor
+                  height="200px"
+                  defaultLanguage="sql"
+                  value={formData.schema || ''}
+                  onChange={handleEditorChange('schema')}
+                  options={{
+                    minimap: { enabled: false },
+                    scrollBeyondLastLine: false,
+                    fontSize: 14,
+                  }}
+                />
+              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -316,81 +612,100 @@ export default function EditExercise() {
 
               <div></div>
 
-              <div>
-                <label htmlFor="checkQueryInsert" className="block text-sm font-medium text-gray-700 mb-1">
-                  Check Query (Insert)
-                </label>
-                <textarea
-                  id="checkQueryInsert"
-                  name="checkQueryInsert"
-                  value={formData.checkQueryInsert || ''}
-                  onChange={handleInputChange}
-                  rows={4}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono"
-                  placeholder="INSERT INTO..."
-                />
-              </div>
+              {shouldShowField('checkQueries', formData.type || 0) && (
+                <>
+                  <div>
+                    <label htmlFor="checkQueryInsert" className="block text-sm font-medium text-gray-700 mb-1">
+                      Check Query (Insert)
+                    </label>
+                    <div className="border border-gray-300 rounded-md overflow-hidden">
+                      <Editor
+                        height="150px"
+                        defaultLanguage="sql"
+                        value={formData.checkQueryInsert || ''}
+                        onChange={handleEditorChange('checkQueryInsert')}
+                        options={{
+                          minimap: { enabled: false },
+                          scrollBeyondLastLine: false,
+                          fontSize: 14,
+                        }}
+                      />
+                    </div>
+                  </div>
 
-              <div>
-                <label htmlFor="checkQuerySelect" className="block text-sm font-medium text-gray-700 mb-1">
-                  Check Query (Select)
-                </label>
-                <textarea
-                  id="checkQuerySelect"
-                  name="checkQuerySelect"
-                  value={formData.checkQuerySelect || ''}
-                  onChange={handleInputChange}
-                  rows={4}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono"
-                  placeholder="SELECT..."
-                />
-              </div>
+                  <div>
+                    <label htmlFor="checkQuerySelect" className="block text-sm font-medium text-gray-700 mb-1">
+                      Check Query (Select)
+                    </label>
+                    <div className="border border-gray-300 rounded-md overflow-hidden">
+                      <Editor
+                        height="150px"
+                        defaultLanguage="sql"
+                        value={formData.checkQuerySelect || ''}
+                        onChange={handleEditorChange('checkQuerySelect')}
+                        options={{
+                          minimap: { enabled: false },
+                          scrollBeyondLastLine: false,
+                          fontSize: 14,
+                        }}
+                      />
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
             
             <div>
               <label htmlFor="solutionQuery" className="block text-sm font-medium text-gray-700 mb-1">
                 Solution Query (Correct SQL Solution)
               </label>
-              <textarea
-                id="solutionQuery"
-                name="solutionQuery"
-                value={formData.solutionQuery || ''}
-                onChange={handleInputChange}
-                rows={4}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono"
-                placeholder="SELECT * FROM..."
-              />
+              <div className="border border-gray-300 rounded-md overflow-hidden">
+                <Editor
+                  height="150px"
+                  defaultLanguage="sql"
+                  value={formData.solutionQuery || ''}
+                  onChange={handleEditorChange('solutionQuery')}
+                  options={{
+                    minimap: { enabled: false },
+                    scrollBeyondLastLine: false,
+                    fontSize: 14,
+                  }}
+                />
+              </div>
             </div>
 
-            <div>
-              <label htmlFor="queryParts" className="block text-sm font-medium text-gray-700 mb-1">
-                Query Parts (JSON for Fill Missing Words or Construct Query)
-              </label>
-              <textarea
-                id="queryParts"
-                name="queryParts"
-                value={formData.queryParts || ''}
-                onChange={handleInputChange}
-                rows={4}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono"
-                placeholder="[{...}]"
-              />
-            </div>
+            {shouldShowField('queryParts', formData.type || 0) && (
+              <div>
+                <label htmlFor="queryParts" className="block text-sm font-medium text-gray-700 mb-1">
+                  Query Parts (for Fill Missing Words or Construct Query)
+                </label>
+                <ArrayEditor
+                  value={formData.queryParts || ''}
+                  onChange={(value: string) => setFormData(prev => ({ ...prev, queryParts: value }))}
+                  placeholder="Add a query part..."
+                />
+              </div>
+            )}
 
-            <div>
-              <label htmlFor="options" className="block text-sm font-medium text-gray-700 mb-1">
-                Options (JSON for Select Answer)
-              </label>
-              <textarea
-                id="options"
-                name="options"
-                value={formData.options || ''}
-                onChange={handleInputChange}
-                rows={4}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono"
-                placeholder="[{...}]"
-              />
-            </div>
+            {shouldShowField('options', formData.type || 0) && (
+              <div>
+                <label htmlFor="options" className="block text-sm font-medium text-gray-700 mb-1">
+                  Options (for Select Answer)
+                </label>
+                {formData.type === 0 ? (
+                  <OptionsEditor
+                    value={formData.options || ''}
+                    onChange={(value: string) => setFormData(prev => ({ ...prev, options: value }))}
+                  />
+                ) : (
+                  <ArrayEditor
+                    value={formData.options || ''}
+                    onChange={(value: string) => setFormData(prev => ({ ...prev, options: value }))}
+                    placeholder="Add an option..."
+                  />
+                )}
+              </div>
+            )}
 
             <div className="flex justify-end pt-4">
               <button
