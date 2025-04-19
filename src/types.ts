@@ -20,7 +20,8 @@ export interface Unit{
   exerciseCount:string
 }
 
-export interface Excerises{
+
+export interface Exercise {
   id:string
   createdAt:string
   updatedAt:string
@@ -37,6 +38,11 @@ export interface Excerises{
   options:string
   queryParts:string
 }
+
+export interface UnitWithExercises extends Unit{
+  exercises: Exercise[]
+}
+
 
 export interface UserForm extends Omit<User, "role" | "id">{
   password: string
