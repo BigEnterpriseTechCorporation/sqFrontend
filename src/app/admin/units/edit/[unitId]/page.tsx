@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { API_URL } from '@/constants';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import Editor from '@monaco-editor/react';
 import ReactMarkdown from 'react-markdown';
@@ -14,9 +14,10 @@ type Unit = {
   description: string;
 };
 
-export default function EditUnit({ params }: { params: { unitId: string } }) {
+export default function EditUnit() {
   const router = useRouter();
-  const { unitId } = params;
+  const params = useParams();
+  const unitId = params.unitId as string;
   
   const [formData, setFormData] = useState({
     title: '',
