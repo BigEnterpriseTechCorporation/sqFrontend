@@ -60,7 +60,11 @@ export const API = {
     register: <T>(token: string, data: any) => 
       apiRequest<T>({ method: HttpMethod.POST, endpoint: 'Account/register', token, body: data }),
     self: <T>(token: string) => 
-      apiRequest<T>({ method: HttpMethod.GET, endpoint: 'Account/self', token })
+      apiRequest<T>({ method: HttpMethod.GET, endpoint: 'Account/self', token }),
+    updateUsername: <T>(token: string, data: { userName: string, currentPassword: string, }) =>
+      apiRequest<T>({ method: HttpMethod.PUT, endpoint: 'Account/profile', token, body: data }),
+    updateUser: <T>(token: string, data: {userName:string,fullName:string, currentPassword: string, newPassword?: string }) =>
+      apiRequest<T>({ method: HttpMethod.PUT, endpoint: 'Account/profile', token, body: data })
   },
   
   // Units
@@ -72,7 +76,11 @@ export const API = {
     create: <T>(token: string, data: any) => 
       apiRequest<T>({ method: HttpMethod.POST, endpoint: 'Units', token, body: data }),
     delete: <T>(token: string, id: string) => 
-      apiRequest<T>({ method: HttpMethod.DELETE, endpoint: `Units/${id}`, token })
+      apiRequest<T>({ method: HttpMethod.DELETE, endpoint: `Units/${id}`, token }),
+    getLikes: <T>(token: string, unitId: string) =>
+      apiRequest<T>({ method: HttpMethod.GET, endpoint: `Units/${unitId}/likes`, token }),
+    toggleLike: <T>(token: string, unitId: string) =>
+      apiRequest<T>({ method: HttpMethod.POST, endpoint: `Units/${unitId}/likes`, token })
   },
   
   // Exercises
@@ -84,6 +92,22 @@ export const API = {
     create: <T>(token: string, data: any) => 
       apiRequest<T>({ method: HttpMethod.POST, endpoint: 'Exercises', token, body: data }),
     delete: <T>(token: string, id: string) => 
-      apiRequest<T>({ method: HttpMethod.DELETE, endpoint: `Exercises/${id}`, token })
+      apiRequest<T>({ method: HttpMethod.DELETE, endpoint: `Exercises/${id}`, token }),
+    getSolution: <T>(token: string, id: string) => 
+      apiRequest<T>({ method: HttpMethod.GET, endpoint: `Exercises/${id}/solution`, token }),
+    getProgress: <T>(token: string, id: string) => 
+      apiRequest<T>({ method: HttpMethod.GET, endpoint: `Exercises/${id}/progress`, token })
+  },
+  
+  // Exercise Solutions and Progress
+  solutions: {
+    submit: <T>(token: string, exerciseId: string, data: any) =>
+      apiRequest<T>({ method: HttpMethod.POST, endpoint: `ExerciseSolutions/${exerciseId}`, token, body: data }),
+    getStats: <T>(token: string) =>
+      apiRequest<T>({ method: HttpMethod.GET, endpoint: 'ExerciseSolutions/stats', token }),
+    getSolved: <T>(token: string) =>
+      apiRequest<T>({ method: HttpMethod.GET, endpoint: 'ExerciseSolutions/solved', token }),
+    getUnsolved: <T>(token: string) =>
+      apiRequest<T>({ method: HttpMethod.GET, endpoint: 'ExerciseSolutions/unsolved', token })
   }
 }; 

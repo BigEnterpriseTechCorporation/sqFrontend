@@ -12,7 +12,7 @@ export default function Login() {
         const password = formData.get("password") as string
 
         try {
-            await login({ userName, password })
+            await login({ userName, password: currentPassword })
             // Redirect to home page on success
             window.location.href = "/"
         } catch (error) {
