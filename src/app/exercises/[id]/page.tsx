@@ -3,23 +3,12 @@
 import { useState, useEffect } from 'react';
 import Editor from '@monaco-editor/react';
 import Split from 'react-split';
-import {useParams} from "next/navigation";
-import exerciseFetch from "@/hooks/exercise";
-import {Exercise} from "@/types";
+import { useParams } from 'next/navigation';
+import { Exercise } from '@/types';
+import { QueryResult, TableInfo } from '@/types/database';
+import Navigation from "@/components/layout/Navigation";
+import exerciseFetch from "@/hooks/content/exercise";
 import { DatabaseManager } from '@/utils/database';
-import Navigation from "@/components/navigation";
-
-interface QueryResult {
-  columns: string[];
-  rows: Record<string, string | number | boolean | null>[];
-  error?: string;
-}
-
-interface TableInfo {
-  name: string;
-  columns: string[];
-  sampleData: Record<string, string | number | boolean | null>[];
-}
 
 declare global {
   interface Window {

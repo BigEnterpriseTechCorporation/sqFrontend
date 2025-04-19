@@ -1,5 +1,5 @@
 import { FormEvent, useState } from "react";
-import login from "@/hooks/login";
+import login from "@/hooks/auth/login";
 
 export default function LoginForm() {
     const [error, setError] = useState("");

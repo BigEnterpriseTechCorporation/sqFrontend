@@ -1,10 +1,5 @@
-import { UserProgress } from "@/hooks/userProgress"
+import { ProgressDisplayProps } from "@/types/components"
 import Link from "next/link"
-
-interface ProgressDisplayProps {
-  progress: UserProgress | null
-  isLoading: boolean
-}
 
 export default function ProgressDisplay({ progress, isLoading }: ProgressDisplayProps) {
   return (

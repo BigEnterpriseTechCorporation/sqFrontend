@@ -1,7 +1,7 @@
 "use client"
 import Link from "next/link";
 import { FormEvent, useState } from "react";
-import register from "@/hooks/register";
+import register from "@/hooks/auth/register";
 import Logo from "@/assets/icons/logo.svg";
 import Image from "next/image";
 import { Eye, EyeOff } from "lucide-react";

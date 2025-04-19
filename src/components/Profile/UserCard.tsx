@@ -1,13 +1,7 @@
 import { useState } from 'react'
-import { User } from "@/types"
-import useChangePassword from '@/hooks/useChangePassword'
+import { UserCardProps } from "@/types/components"
+import useChangePassword from '@/hooks/user/useChangePassword'
 import { Eye, EyeOff } from 'lucide-react'
-
-interface UserCardProps {
-  user: User
-  onUpdateUsername: (newUsername: string, password: string) => Promise<User>
-  onUpdateFullName: (newFullName: string, password: string) => Promise<User>
-}
 
 export default function UserCard({ user, onUpdateUsername, onUpdateFullName }: UserCardProps) {
   // Username editing state

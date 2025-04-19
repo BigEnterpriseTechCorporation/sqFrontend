@@ -1,22 +1,5 @@
-import { token } from "@/types";
+import { token, UserProgress } from "@/types";
 import { API } from "@/utils/api";
-
-// Define the shape of progress data returned by the API
-export interface UserProgress {
-  totalExercises: number;
-  completedExercises: number;
-  completionRate: number;
-  exercisesByDifficulty: Record<string, number>;
-  exercisesByType: Record<string, number>;
-  lastCompletedExercises: {
-    id: string;
-    title: string;
-    unitId: string;
-    unitTitle: string;
-    completedAt: string;
-  }[];
-  completedByDifficulty: Record<string, number>;
-}
 
 /**
  * Hook to fetch user progress statistics

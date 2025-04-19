@@ -1,6 +1,6 @@
 import Link from "next/link"
-import Navigation from "@/components/navigation"
-import Footer from "@/components/footer"
+import Navigation from "@/components/layout/Navigation"
+import Footer from "@/components/layout/Footer"
 
 interface ErrorDisplayProps {
   message: string;

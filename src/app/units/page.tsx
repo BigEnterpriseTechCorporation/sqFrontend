@@ -1,11 +1,11 @@
 "use client"
 
 import { useState, useEffect } from 'react'
-import allUnits from "@/hooks/allUnits"
+import allUnits from "@/hooks/content/allUnits"
 import { Unit } from "@/types"
-import UnitTitle from "@/components/unitTitle"
-import Navigation from "@/components/navigation"
-import Footer from "@/components/footer"
+import UnitTitle from "@/components/layout/UnitTitle"
+import Navigation from "@/components/layout/Navigation"
+import Footer from "@/components/layout/Footer"
 import UnitsList from "@/components/Units/UnitsList"
 import LoadingState from "@/components/Units/LoadingState"
 import ErrorState from "@/components/Units/ErrorState"

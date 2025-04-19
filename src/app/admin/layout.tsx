@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import checkAdmin from '@/hooks/checkAdmin';
+import checkAdmin from '@/hooks/admin/checkAdmin';
 
 export default function AdminLayout({
   children,

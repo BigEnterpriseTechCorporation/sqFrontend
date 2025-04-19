@@ -1,7 +1,7 @@
 import WaveYellow from "@/assets/icons/wave-yellow.svg"
 import serverImage from "@/assets/images/server.png"
 import Image from "next/image"
-import Button from "@/components/button";
+import Button from "@/components/ui/Button";
 
 export default function Header(){
     return (

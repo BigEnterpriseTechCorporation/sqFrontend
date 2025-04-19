@@ -1,11 +1,11 @@
 "use client"
 
 import { useEffect, useState } from "react";
-import { UnitWithExercises } from "@/types";
-import unitAndExercises from "@/hooks/unitAndExercises";
 import { useParams } from "next/navigation";
-import Navigation from "@/components/navigation";
-import UnitTitle from "@/components/unitTitle";
+import { UnitWithExercises } from "@/types";
+import unitAndExercises from "@/hooks/content/unitAndExercises";
+import Navigation from "@/components/layout/Navigation";
+import UnitTitle from "@/components/layout/UnitTitle";
 import { serialize } from 'next-mdx-remote/serialize';
 import { MDXRemoteSerializeResult } from 'next-mdx-remote';
 

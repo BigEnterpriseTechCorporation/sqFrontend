@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import self from '@/hooks/self'
+import self from '@/hooks/auth/self'
 import { User } from '@/types'
 
 export default function useUpdateUsername() {

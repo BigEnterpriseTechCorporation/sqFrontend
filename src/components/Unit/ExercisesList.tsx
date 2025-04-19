@@ -1,4 +1,4 @@
-import ExerciseCard from "@/components/ExerciseCard";
+import ExerciseCard from "@/components/ui/ExerciseCard";
 import { Exercise } from "@/types";
 
 interface ExercisesListProps {

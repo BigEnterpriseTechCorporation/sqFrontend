@@ -14,4 +14,4 @@ export default function UnitTitle({title,...props}:UnitTitleProps){
             <WavePink className={"absolute -bottom-1 w-full"}/>
         </div>
     )
-}
+} 
