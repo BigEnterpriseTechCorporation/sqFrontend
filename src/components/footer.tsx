@@ -5,9 +5,9 @@ import Link from "next/link";
 
 export default function Footer(){
     return (
-        <footer className="text-xl font-jura font-bold pb-32 pt-10 px-20 relative bg-[#202020] text-white relative">
+        <footer className="text-xl font-jura font-bold pb-32 pt-10 px-20 relative bg-[#202020] text-white">
             {/* Wave at the top of footer */}
-            <WaveDark className="absolute left-0 top-0 w-full transform -translate-y-full"/>
+            <WaveDark className="absolute left-0 top-1 w-full transform -translate-y-full"/>
             
             {/* Navigation Column */}
             <div>

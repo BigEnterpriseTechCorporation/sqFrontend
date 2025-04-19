@@ -47,7 +47,7 @@ export default function Units() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-bg1 bg-stripes flex justify-center items-center">
+            <div className="min-h-screen bg-bg1 flex justify-center items-center">
                 <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-black"></div>
             </div>
         )
@@ -73,7 +73,7 @@ export default function Units() {
             <UnitTitle title="Юниты" />
             
             {/* Units List */}
-            <div className="max-w-5xl mx-auto px-4 py-10 relative mb-52">
+            <div className="max-w-5xl mx-auto px-4 py-10 relative mb-52 min-h-[60vh]">
                 <div className="space-y-6">
                     {visibleUnits.map((unit) => (
                         <div 
@@ -81,9 +81,8 @@ export default function Units() {
                             className="bg-bg2 p-6 rounded-lg shadow-md border-2 border-black relative overflow-hidden"
                         >
                             <Link href={`/unit/${unit.id}`} className="block">
-                                <h2 className="text-3xl font-bold mb-2">Юнит {unit.id}</h2>
-                                <p className="text-gray-700 mb-4 line-clamp-3">{unit.description}</p>
-                                
+                                <h2 className="text-3xl font-bold mb-2">{unit.title}</h2>
+
                                 <div className="flex justify-between text-sm mt-4">
                                     <p><strong>Created by:</strong> {unit.ownerName}</p>
                                     <p><strong>Exercises:</strong> {unit.exerciseCount}</p>

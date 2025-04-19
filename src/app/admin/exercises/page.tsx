@@ -76,23 +76,23 @@ export default function AdminExercisesPage() {
     { value: 0, label: 'Easy' },
     { value: 1, label: 'Medium' },
     { value: 2, label: 'Hard' },
-    { value: 3, label: 'Expert' }
+    { value: 3, label: 'Ultra-hard' }
   ];
 
   // Exercise type options
   const typeOptions = [
-    { value: 0, label: 'Type 0' },
-    { value: 1, label: 'Type 1' },
-    { value: 2, label: 'Type 2' },
-    { value: 3, label: 'Type 3' },
-    { value: 4, label: 'Type 4' }
+    { value: 0, label: 'SelectAnswer' },
+    { value: 1, label: 'FillMissingWords' },
+    { value: 2, label: 'ConstructQuery' },
+    { value: 3, label: 'SimpleQuery' },
+    { value: 4, label: 'ComplexQuery' }
   ];
 
   // Check type options
   const checkTypeOptions = [
-    { value: 0, label: 'Type 0' },
-    { value: 1, label: 'Type 1' },
-    { value: 2, label: 'Type 2' }
+    { value: 0, label: 'Compare' },
+    { value: 1, label: 'Select' },
+    { value: 2, label: 'InsertAndSelect' },
   ];
 
   // Unit options
