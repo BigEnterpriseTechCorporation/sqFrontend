@@ -1,23 +1,37 @@
 "use client"
 import Link from "next/link";
-import { FormEvent } from "react";
+import { FormEvent, useState } from "react";
 import login from "@/hooks/login";
 
 export default function Login() {
+    const [error, setError] = useState("");
+
     async function onSubmit(event: FormEvent<HTMLFormElement>) {
-        event.preventDefault()
-        const formData = new FormData(event.currentTarget)
+        event.preventDefault();
+        setError("");
         
-        const userName = formData.get("userName") as string
-        const password = formData.get("password") as string
+        const formData = new FormData(event.currentTarget);
+        
+        const userName = formData.get("userName") as string;
+        const password = formData.get("password") as string;
 
         try {
-            await login({ userName, password })
-            // Redirect to home page on success
-            window.location.href = "/"
+            // The login function returns the token directly
+            const token = await login({ userName, password });
+            
+            // Store the token in localStorage
+            if (token) {
+                localStorage.setItem('token', token);
+                console.log('Token saved to localStorage:', token);
+                
+                // Redirect to home page on success
+                window.location.href = "/";
+            } else {
+                setError("Authentication failed. No token received.");
+            }
         } catch (error) {
-            console.error("Login failed:", error)
-            // You might want to show an error message to the user here
+            console.error("Login failed:", error);
+            setError("Login failed. Please check your credentials and try again.");
         }
     }
 
@@ -25,6 +39,13 @@ export default function Login() {
         <main className="min-h-screen flex items-center justify-center">
             <form onSubmit={onSubmit} className="space-y-4 w-full max-w-md p-8">
                 <h1 className="text-2xl font-bold text-center">Login</h1>
+                
+                {error && (
+                    <div className="p-3 bg-red-100 text-red-700 rounded">
+                        {error}
+                    </div>
+                )}
+                
                 <div className="space-y-2">
                     <input
                         type="text"

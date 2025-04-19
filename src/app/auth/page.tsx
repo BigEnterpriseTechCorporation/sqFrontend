@@ -12,6 +12,7 @@ export default function Auth() {
     const [userName, setUserName] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
+    const [error, setError] = useState("");
     
     // Password strength checks
     const isWeakPassword = password.length > 0 && password.length < 8;
@@ -20,6 +21,8 @@ export default function Auth() {
 
     async function onSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
+        setError("");
+        
         const formData = new FormData(event.currentTarget);
         
         const fullName = formData.get("fullName") as string;
@@ -27,12 +30,22 @@ export default function Auth() {
         const password = formData.get("password") as string;
 
         try {
-            await register({fullName, userName, password});
-            // Redirect to home page on success
-            window.location.href = "/";
+            // The register function returns the token directly based on the hook implementation
+            const token = await register({fullName, userName, password});
+            
+            // Store the token in localStorage
+            if (token) {
+                localStorage.setItem('token', token);
+                console.log('Token saved to localStorage:', token);
+                
+                // Redirect to home page on success
+                window.location.href = "/";
+            } else {
+                setError("Authentication failed. No token received.");
+            }
         } catch (error) {
             console.error("Registration failed:", error);
-            // You might want to show an error message to the user here
+            setError("Registration failed. Please try again.");
         }
     }
 
@@ -44,15 +57,15 @@ export default function Auth() {
                     <div>
                         <h1 className="text-5xl font-bold mb-6 text-center pt-16">Раскрой силу данных</h1>
                         <p className="text-lg mb-12 text-center">
-                            Осваивайте SQL быстрее, умнее и лучше. Интерактивный
+                            Осваивайте SQL быстрее, умнее и лучше. Интерактивный 
                             тренажер, который поможет вам быстро и эффективно
                             научиться работать с базами данных.
                         </p>
                     </div>
 
-                    <Image
-                        src={catThumsUp}
-                        alt="Cat giving thumbs up"
+                    <Image 
+                        src={catThumsUp} 
+                        alt="Cat giving thumbs up" 
                         priority
                         className="object-contain object-bottom w-fit h-full justify-self-center"
                     />
@@ -84,6 +97,12 @@ export default function Auth() {
                             Регистрация
                         </Link>
                     </div>
+                    
+                    {error && (
+                        <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-lg">
+                            {error}
+                        </div>
+                    )}
                     
                     <form onSubmit={onSubmit} className="space-y-6">
                         <div>

@@ -647,21 +647,21 @@ export default function ExercisesAdmin() {
                   <tbody className="bg-white divide-y divide-gray-200">
                     {filteredExercises.map((exercise) => (
                       <tr key={exercise.id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="px-6 py-4">
                           <div className="text-sm font-medium text-gray-900">{exercise.title}</div>
                           <div className="text-sm text-gray-500">{exercise.description}</div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="px-6 py-4 ">
                           <div className="text-sm text-gray-900">
                             {exercise.unit?.title || "Unknown Unit"}
                           </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="px-6 py-4 ">
                           <div className="text-sm text-gray-900">
                             {exerciseTypes.find(t => t.value === exercise.type)?.label || "Unknown"}
                           </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <td className="px-6 py-4  text-sm font-medium">
                           <button
                             onClick={() => handleEditExercise(exercise.id)}
                             className="text-indigo-600 hover:text-indigo-900 mr-4"
