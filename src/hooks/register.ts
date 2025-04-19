@@ -6,7 +6,7 @@ interface data {
 
 export default async function register(formData: userRegister): Promise<data> {
 	try {
-		const response = await fetch(`${process.env.NEXT_PUBLIC_HOST}/Account/register`, {
+		const response = await fetch(`https://rpi.tail707b9c.ts.net/api/v1/Account/register`, {
 			method: 'POST',
 			headers: {
 				'accept': '*/*',

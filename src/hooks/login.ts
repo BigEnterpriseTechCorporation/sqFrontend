@@ -6,7 +6,7 @@ interface data {
 
 export default async function login(formData: userLogin): Promise<data> {
 	try {
-		const response = await fetch(`${process.env.NEXT_PUBLIC_HOST}/Account/login`, {
+		const response = await fetch(`https://rpi.tail707b9c.ts.net/api/v1/Account/login`, {
 			method: 'POST',
 			headers: {
 				'accept': '*/*',

@@ -6,7 +6,7 @@ interface data {
 
 export default async function self(formData: {token:token}): Promise<data> {
 	try {
-		const response = await fetch(`${process.env.NEXT_PUBLIC_HOST}/Account/self`, {
+		const response = await fetch(`https://rpi.tail707b9c.ts.net/api/v1/Account/self`, {
 			method: 'GET',
 			headers: {
 				"Authorization": `Bearer ${formData.token}`,
@@ -20,7 +20,6 @@ export default async function self(formData: {token:token}): Promise<data> {
 		}
 
 		const data = await response.json()
-		localStorage.setItem('token', data.token)
 		return data
 	} catch (error) {
 		console.error('Self info error:', error)

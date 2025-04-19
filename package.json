@@ -3,10 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev --turbopack -p 8081",
     "build": "next build",
     "start": "next start -p 8081",
-    "lint": "next lint"
+    "lint": "next lint "
   },
   "dependencies": {
     "@antonz/sqlean": "^3.47.1-rc1",

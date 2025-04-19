@@ -9,7 +9,7 @@ import Link from "next/link";
 
 export default function UnitPage() {
     const params = useParams();
-    const [unit, setUnit] = useState<UnitWithExercises>(null);
+    const [unit, setUnit] = useState<UnitWithExercises | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
 

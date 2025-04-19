@@ -3,7 +3,7 @@ import {Unit} from "@/types";
 
 export default async function allUnits(formData: {token:token}):Promise<Unit[]> {
     try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/Units`, {
+        const response = await fetch(`https://rpi.tail707b9c.ts.net/api/v1/Units`, {
             method: 'GET',
             headers: {
                 "Authorization": `Bearer ${formData.token}`,
@@ -17,7 +17,6 @@ export default async function allUnits(formData: {token:token}):Promise<Unit[]> 
         }
 
         const data = await response.json()
-        localStorage.setItem('token', data.token)
         return data
     } catch (error) {
         console.error('Self info error:', error)

@@ -2,7 +2,7 @@ import {token, Exercise} from "@/types";
 
 export default async function exercise(formData: {token:token, id:string}):Promise<Exercise> {
     try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/Exercises/${formData.id}`, {
+        const response = await fetch(`https://rpi.tail707b9c.ts.net/api/v1/Exercises/${formData.id}`, {
             method: 'GET',
             headers: {
                 "Authorization": `Bearer ${formData.token}`,
@@ -16,7 +16,6 @@ export default async function exercise(formData: {token:token, id:string}):Promi
         }
 
         const data = await response.json()
-        localStorage.setItem('token', data.token)
         return data
     } catch (error) {
         console.error('Self info error:', error)
