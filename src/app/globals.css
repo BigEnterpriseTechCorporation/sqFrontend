@@ -5,6 +5,7 @@
   --text-md: 1.125rem;
   --color-bg1: #FFBCF6;
   --color-bg2: #FEF1C9;
+  --color-bg3: #FFAF5A;
   --font-jura: "Jura", sans-serif;
   --font-raleway: "Raleway", sans-serif;
   --radius-5: 1.25rem;
@@ -18,4 +19,17 @@ React-split requirements
 }
 .gutter.gutter-horizontal {
   cursor: col-resize;
+}
+
+/* Add vertical stripes background pattern class */
+@layer utilities {
+  .bg-stripes {
+    background-image: repeating-linear-gradient(
+      to right,
+      rgba(255, 255, 255, 0.1),
+      rgba(255, 255, 255, 0.1) 12px,
+      transparent 12px,
+      transparent 24px
+    );
+  }
 }
