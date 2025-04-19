@@ -1,27 +1,19 @@
-import { userRegister } from "@/types"
+import { userRegister, token } from "@/types"
+import { API } from '@/utils/api'
 
-interface data {
-	token: string
+interface RegisterResponse {
+	token: token
 }
 
-export default async function register(formData: userRegister): Promise<data> {
+export default async function register(userData: userRegister): Promise<token> {
 	try {
-		const response = await fetch(`https://rpi.tail707b9c.ts.net/api/v1/Account/register`, {
-			method: 'POST',
-			headers: {
-				'accept': '*/*',
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify(formData),
-		})
-
-		if (!response.ok) {
-			throw new Error(`HTTP error! status: ${response.status}`)
-		}
-
-		const data = await response.json()
-		localStorage.setItem('token', data.token)
-		return data
+		// For registration, we don't have a token yet, so we'll use an empty string
+		const emptyToken = ''
+		
+		const response = await API.auth.register<RegisterResponse>(emptyToken, userData)
+		
+		// Return the token from the response
+		return response.token
 	} catch (error) {
 		console.error('Registration error:', error)
 		throw error

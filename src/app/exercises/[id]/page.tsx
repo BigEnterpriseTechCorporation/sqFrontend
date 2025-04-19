@@ -4,10 +4,10 @@ import { useState, useEffect } from 'react';
 import Editor from '@monaco-editor/react';
 import Split from 'react-split';
 import {useParams} from "next/navigation";
-import unitAndExercises from "@/hooks/unitAndExercises";
 import exerciseFetch from "@/hooks/exercise";
 import {Exercise} from "@/types";
 import { DatabaseManager } from '@/utils/database';
+import Navigation from "@/components/navigation";
 
 interface QueryResult {
   columns: string[];
@@ -98,25 +98,7 @@ export default function ExercisesPage() {
 
   return (
     <main className="h-screen flex flex-col bg-[#1E1E1E]">
-      <header className="flex justify-between items-center px-4 h-12 bg-[#333333] border-b border-[#444444]">
-        <h1 className="text-white text-lg font-medium">Visual SQL</h1>
-        
-        <div className="flex-1 max-w-xl mx-4">
-          <input 
-            type="text"
-            className="w-full px-3 py-1.5 bg-[#1E1E1E] border border-[#444444] rounded text-white"
-          />
-        </div>
-
-        <div className="flex gap-2">
-          <button className="px-3 py-1 bg-[#444444] text-white text-sm rounded hover:bg-[#505050]">
-            Вход
-          </button>
-          <button className="px-3 py-1 bg-[#444444] text-white text-sm rounded hover:bg-[#505050]">
-            Регистрация
-          </button>
-        </div>
-      </header>
+      <Navigation/>
 
       <Split 
         className="flex-1 flex bg-[#444444] "

@@ -1,19 +1,30 @@
 import { useState } from 'react';
+import { API } from '@/utils/api';
 
 interface UseAdminFormProps<T> {
   initialValues: T;
-  endpoint: string;
+  endpoint: 'Units' | 'Exercises';
   onSuccess?: () => void;
 }
 
+interface UseAdminFormResult<T> {
+  formData: T;
+  setFormData: React.Dispatch<React.SetStateAction<T>>;
+  error: string | null;
+  loading: boolean;
+  handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
+  handleSubmit: (e: React.FormEvent) => Promise<void>;
+  handleDelete: (id: string) => Promise<boolean>;
+}
+
 /**
- * Custom hook for handling admin form state, submission, and errors
+ * Custom hook for handling admin form state, submission, and deletions
  */
 export default function useAdminForm<T>({ 
   initialValues, 
   endpoint,
   onSuccess 
-}: UseAdminFormProps<T>) {
+}: UseAdminFormProps<T>): UseAdminFormResult<T> {
   const [formData, setFormData] = useState<T>(initialValues);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -43,24 +54,11 @@ export default function useAdminForm<T>({
         throw new Error('No authentication token found');
       }
 
-      const response = await fetch(`https://rpi.tail707b9c.ts.net/api/v1/${endpoint}`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Failed to create ${endpoint.toLowerCase()}`);
-      }
-
-      const data = await response.json();
-      
-      // Only update token if it's explicitly provided in the response
-      if (data.token) {
-        localStorage.setItem('token', data.token);
+      // Use the appropriate API method based on the endpoint
+      if (endpoint === 'Units') {
+        await API.units.create(token, formData);
+      } else if (endpoint === 'Exercises') {
+        await API.exercises.create(token, formData);
       }
 
       // Reset form on success
@@ -77,12 +75,50 @@ export default function useAdminForm<T>({
     }
   };
 
+  // Delete an item by ID
+  const handleDelete = async (id: string): Promise<boolean> => {
+    if (!window.confirm(`Are you sure you want to delete this ${endpoint.slice(0, -1)}?`)) {
+      return false;
+    }
+    
+    setLoading(true);
+    setError(null);
+
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+
+      // Use the appropriate API method based on the endpoint
+      if (endpoint === 'Units') {
+        await API.units.delete(token, id);
+      } else if (endpoint === 'Exercises') {
+        await API.exercises.delete(token, id);
+      }
+
+      alert(`${endpoint.slice(0, -1)} deleted successfully!`);
+      
+      if (onSuccess) {
+        onSuccess();
+      }
+      
+      return true;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : `Failed to delete ${endpoint.toLowerCase()}`);
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return {
     formData,
     setFormData,
     error,
     loading,
     handleChange,
-    handleSubmit
+    handleSubmit,
+    handleDelete
   };
 } 
