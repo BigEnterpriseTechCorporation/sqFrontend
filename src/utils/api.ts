@@ -55,9 +55,9 @@ export async function apiRequest<T>({ method, endpoint, token, body }: ApiOption
 export const API = {
   // Authentication
   auth: {
-    login: <T>(token: string, data: any) => 
+    login: <T>(token: string, data: {userName:string, password:string}) =>
       apiRequest<T>({ method: HttpMethod.POST, endpoint: 'Account/login', token, body: data }),
-    register: <T>(token: string, data: any) => 
+    register: <T>(token: string, data: { userName:string, password:string, fullName:string }) =>
       apiRequest<T>({ method: HttpMethod.POST, endpoint: 'Account/register', token, body: data }),
     self: <T>(token: string) => 
       apiRequest<T>({ method: HttpMethod.GET, endpoint: 'Account/self', token }),

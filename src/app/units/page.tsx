@@ -73,17 +73,17 @@ export default function Units() {
             <UnitTitle title="Юниты" />
             
             {/* Units List */}
-            <div className="max-w-5xl mx-auto px-4 py-10 relative mb-52 min-h-[60vh]">
+            <div className="max-w-5xl mx-auto px-4 pb-10 pt-24 relative mb-52 min-h-[60vh]">
                 <div className="space-y-6">
                     {visibleUnits.map((unit) => (
                         <div 
                             key={unit.id} 
-                            className="bg-bg2 p-6 rounded-lg shadow-md border-2 border-black relative overflow-hidden"
+                            className="bg-bg2 p-6 rounded-lg shadow-orange hover:px-10 ease-in-out duration-300 relative overflow-hidden"
                         >
                             <Link href={`/unit/${unit.id}`} className="block">
-                                <h2 className="text-3xl font-bold mb-2">{unit.title}</h2>
+                                <h2 className="text-3xl font-bold mb-4">{unit.title}</h2>
 
-                                <div className="flex justify-between text-sm mt-4">
+                                <div className="flex gap-12 text-sm mt-4">
                                     <p><strong>Created by:</strong> {unit.ownerName}</p>
                                     <p><strong>Exercises:</strong> {unit.exerciseCount}</p>
                                 </div>
@@ -97,7 +97,7 @@ export default function Units() {
                     <div className="flex justify-center mt-12">
                         <button 
                             onClick={handleLoadMore}
-                            className="bg-white text-gray-800 font-semibold py-3 px-8 rounded-full border-2 border-black shadow-md hover:bg-gray-100 transition-colors duration-200"
+                            className="bg-bg3 text-gray-800 font-semibold py-3 px-8 rounded-full border-2 border-black shadow-orange hover:bg-gray-100 transition-colors duration-200"
                         >
                             Загрузить ещё
                         </button>

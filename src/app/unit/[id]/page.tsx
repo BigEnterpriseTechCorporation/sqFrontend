@@ -86,7 +86,7 @@ export default function UnitPage() {
 
             {/* Main content */}
             <div className="max-w-5xl mx-auto px-4 py-10 min-h-screen">
-                <div className="bg-bg3 p-6 rounded-lg mb-10 shadow-sm border-2 border-black">
+                <div className="bg-bg2 p-6 rounded-lg mb-10 shadow-orange">
 
                     <div className="flex justify-between text-sm opacity-75">
                         <p><strong>Created by:</strong> {unit.ownerName}</p>

@@ -5,7 +5,7 @@ interface LoginResponse {
 	token: token
 }
 
-export default async function login(userData: userLogin): Promise<token> {
+export default async function login(userData: {userName: string, password: string}): Promise<token> {
 	try {
 		// For login, we don't have a token yet, so we'll use an empty string
 		const emptyToken = ''

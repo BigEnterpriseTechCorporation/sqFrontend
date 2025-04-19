@@ -18,7 +18,7 @@ export default function Home() {
     <div>
       <Navigation/>
       <Header/>
-      <div className="bg-[#FEF1C9] min-h-[400px] relative overflow-hidden">
+      <div className="bg-bg2 min-h-[400px] relative overflow-hidden">
         <div className="max-w-6xl mx-auto px-4 pt-20 pb-48 flex items-center justify-between">
           <div className="max-w-xl">
             <h2 className="text-4xl font-jura mb-6 font-bold">О тренажере</h2>
@@ -39,11 +39,11 @@ export default function Home() {
         <WavePink className="absolute bottom-0 w-full"/>
       </div>
 
-      <div className="bg-[#FFBCF6] min-h-[400px] relative overflow-hidden">
+      <div className="bg-bg1 min-h-[400px] relative overflow-hidden">
         <div className="mx-auto px-4 pt-20 pb-48 flex flex-col items-center">
           <h2 className="text-4xl font-jura mb-16 font-bold text-center">Уровни сложности</h2>
           <div className="w-fit grid grid-cols-4 gap-8">
-            <div className="bg-[#FEF1C9] rounded-2xl p-6 px-6 flex flex-col items-center shadow-orange">
+            <div className="bg-bg2 rounded-2xl p-6 px-6 flex flex-col items-center shadow-orange">
               <div className="w-60 h-48 rounded-2xl overflow-hidden mb-6">
                 <Image 
                   src={easyLevel}
@@ -57,7 +57,7 @@ export default function Home() {
               <p className="text-center font-raleway">Выберите правильный<br/> вариант из перечня</p>
             </div>
 
-            <div className="bg-[#FEF1C9] rounded-2xl p-6 flex flex-col items-center shadow-orange">
+            <div className="bg-bg2 rounded-2xl p-6 flex flex-col items-center shadow-orange">
               <div className="w-60 h-48 rounded-2xl overflow-hidden mb-6">
                 <Image 
                   src={mediumLevel}
@@ -71,7 +71,7 @@ export default function Home() {
               <p className="text-center font-raleway">Вставьте часть команды в<br/>  текст</p>
             </div>
 
-            <div className="bg-[#FEF1C9] rounded-2xl p-6 flex flex-col items-center shadow-orange">
+            <div className="bg-bg2 rounded-2xl p-6 flex flex-col items-center shadow-orange">
               <div className="w-60 h-48 rounded-2xl overflow-hidden mb-6">
                 <Image 
                   src={hardLevel}
@@ -85,7 +85,7 @@ export default function Home() {
               <p className="text-center font-raleway">Напишите простой запрос<br/>  полностью</p>
             </div>
 
-            <div className="bg-[#FEF1C9] rounded-2xl p-6 flex flex-col items-center shadow-orange">
+            <div className="bg-bg2 rounded-2xl p-6 flex flex-col items-center shadow-orange">
               <div className="w-60 h-48 rounded-2xl overflow-hidden mb-6">
                 <Image 
                   src={ultraHardLevel}
@@ -103,7 +103,7 @@ export default function Home() {
         <WaveYellow className="absolute bottom-0 w-full"/>
       </div>
 
-      <div className="bg-[#FEF1C9] min-h-[400px] relative overflow-hidden">
+      <div className="bg-bg2 min-h-[400px] relative overflow-hidden">
         <div className="w-fit mx-auto px-4 pt-20">
           <h2 className="text-4xl font-jura mb-16 font-bold">Как это работает?</h2>
           
@@ -127,7 +127,7 @@ export default function Home() {
                 alt="Cat worker"
                 width={400}
                 height={600}
-                className="object-contain col-start-2 row-span-2 self-end justify-self-center "
+                className="object-contain col-start-2 row-span-2 self-end justify-self-center relative -bottom-1"
             />
 
             <div className={"col-start-3 row-start-1 justify-self-end"}>

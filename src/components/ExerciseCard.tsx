@@ -19,7 +19,7 @@ export default function ExerciseCard({ exercise }: ExerciseCardProps) {
   }[exercise.difficulty] || 'bg-gray-100 text-gray-800';
 
   return (
-    <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
+    <div className="bg-bg2 rounded-5 overflow-hidden transition-shadow duration-300 shadow-orange">
 
       {/* Card content */}
       <div className="p-6">
@@ -36,7 +36,7 @@ export default function ExerciseCard({ exercise }: ExerciseCardProps) {
         {/* Action button */}
         <Link 
           href={`/exercises/${exercise.id}`}
-          className="inline-block bg-indigo-600 text-white py-2 px-4 rounded hover:bg-indigo-700 transition-colors duration-200"
+          className="inline-block bg-bg1 shadow-orange py-2 px-4 rounded-lg hover:bg-blue-200 transition-colors duration-200"
         >
           Open Exercise
         </Link>

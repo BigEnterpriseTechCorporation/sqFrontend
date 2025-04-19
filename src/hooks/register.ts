@@ -5,7 +5,7 @@ interface RegisterResponse {
 	token: token
 }
 
-export default async function register(userData: userRegister): Promise<token> {
+export default async function register(userData: {userName: string, password: string, fullName:string}): Promise<token> {
 	try {
 		// For registration, we don't have a token yet, so we'll use an empty string
 		const emptyToken = ''
