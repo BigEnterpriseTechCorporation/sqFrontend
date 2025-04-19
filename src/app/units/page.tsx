@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import allUnits from "@/hooks/allUnits"
 import { Unit } from "@/types"
 import UnitTitle from "@/components/unitTitle";
+import Link from "next/link";
 
 export default function Units() {
     const [units, setUnits] = useState<Unit[]>([])
@@ -42,13 +43,15 @@ export default function Units() {
         <main>
             <UnitTitle title={"Units"}/>
             <h1>Units</h1>
-            <div>
+            <div className={"flex flex-col gap-8"}>
                 {units.map((unit) => (
-                    <div key={unit.id}>
+                    <div key={unit.id} >
+                        <h1>{unit.id}</h1>
                         <UnitTitle title={unit.title} />
                         <p>{unit.description}</p>
                         <p>Created by: {unit.ownerName}</p>
                         <p>Exercises: {unit.exerciseCount}</p>
+                        <Link href={`/unit/${unit.id}`}>К Юниту</Link>
                     </div>
                 ))}
             </div>

@@ -5,6 +5,7 @@ import {UnitWithExercises} from "@/types";
 import unitAndExercises from "@/hooks/unitAndExercises";
 import { useParams } from "next/navigation";
 import UnitTitle from "@/components/unitTitle";
+import Link from "next/link";
 
 export default function UnitPage() {
     const params = useParams();
@@ -62,15 +63,20 @@ export default function UnitPage() {
 
             <div>
                 <h2>Exercises</h2>
-                {unit.exercises.map((exercise) => (
-                    <div key={exercise.id}>
-                        <h3>{exercise.title}</h3>
-                        <p>{exercise.description}</p>
-                        <p>Type: {exercise.type}</p>
-                        <p>Difficulty: {exercise.difficulty}</p>
-                        <p>Check Type: {exercise.checkType}</p>
-                    </div>
-                ))}
+                <div className="flex flex-col gap-8">
+                    {unit.exercises.map((exercise) => (
+                        <div key={exercise.id}>
+                            <h1>{exercise.id}</h1>
+                            <h3>{exercise.title}</h3>
+                            <p>{exercise.description}</p>
+                            <p>Schema: {exercise.schema}</p>
+                            <p>Difficulty: {exercise.difficulty}</p>
+                            <p>Check Type: {exercise.checkType}</p>
+                            <Link href={`/exercises/${exercise.id}`}>К задаче</Link>
+                        </div>
+                    ))}
+                </div>
+
             </div>
         </main>
     );
