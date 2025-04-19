@@ -13,7 +13,7 @@ export default function Auth(){
         const password = formData.get("password") as string
 
         try {
-            await register({fullName, userName, password})
+            await register({fullName, userName, password: currentPassword})
             // Redirect to home page on success
             window.location.href = "/"
         } catch (error) {

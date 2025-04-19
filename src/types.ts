@@ -53,7 +53,7 @@ export interface UnitWithExercises extends Unit{
 
 
 export interface UserForm extends Omit<User, "role" | "id">{
-  password: string
+  currentPassword: string
 }
 
 export type userLogin = Omit<UserForm, "fullName">
