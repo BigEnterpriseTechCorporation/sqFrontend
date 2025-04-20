@@ -12,6 +12,7 @@ import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { materialDark } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 import type { ComponentPropsWithoutRef } from 'react';
+import React from 'react';
 
 export default function MediumExercisePage() {
   const searchParams = useSearchParams();
@@ -113,6 +114,32 @@ export default function MediumExercisePage() {
     setShowAnswer(false);
   }, [currentQuestion]);
 
+  // Function to extract SQL code blocks and handle inputs
+  const processQuestion = (questionText: string) => {
+    // Split the entire text into parts before, inside, and after SQL block
+    const sqlBlockRegex = /```sql\s+([\s\S]*?)```/;
+    const match = questionText.match(sqlBlockRegex);
+    
+    if (!match) {
+      // No SQL block found - return the original text
+      return {
+        beforeSql: questionText,
+        sqlCode: '',
+        afterSql: '',
+        hasSqlBlock: false
+      };
+    }
+    
+    // Extract parts of the text
+    const parts = questionText.split(sqlBlockRegex);
+    return {
+      beforeSql: parts[0]?.trim() || '',
+      sqlCode: match[1]?.trim() || '',
+      afterSql: parts[2]?.trim() || '',
+      hasSqlBlock: true
+    };
+  };
+
   const handleInputChange = (index: number, value: string) => {
     const newAnswers = [...answers];
     newAnswers[index] = value;
@@ -131,18 +158,27 @@ export default function MediumExercisePage() {
     
     // Get the solution query from the exercise or the question
     const solutionQuery = (currentQuestionData as Question).solutionQuery || exercise?.solutionQuery || '';
-    const userInputs = answers.filter(a => a.trim() !== '');
     
-    // Check if all gaps are filled
-    // Update gap pattern to 6 underscores
-    const gapCount = (currentQuestionData.text.match(/______/g) || []).length;
-    if (userInputs.length < gapCount) {
+    // Process question to get SQL code if available
+    const { sqlCode, hasSqlBlock } = processQuestion(currentQuestionData.text);
+    const textToCheck = hasSqlBlock ? sqlCode : currentQuestionData.text;
+    
+    // Count gaps in the appropriate text
+    const gapCount = (textToCheck.match(/______/g) || []).length;
+    
+    // Check if all answers are filled (not empty)
+    const emptyAnswers = answers.slice(0, gapCount).filter(a => a.trim() === '').length;
+    
+    if (emptyAnswers > 0) {
       setFeedback({
         correct: false,
         message: 'Пожалуйста, заполните все пропуски'
       });
       return;
     }
+    
+    // Filter out any extra answers beyond the actual gaps
+    const userInputs = answers.slice(0, gapCount);
 
     // Check against solution query (case insensitive)
     let isCorrect = true;
@@ -339,58 +375,121 @@ export default function MediumExercisePage() {
               {/* Question title */}
               <h3 className="text-2xl mb-5">Задание {currentQuestion + 1}:</h3>
               
-              {/* Question content */}
-              <div className="rounded-lg p-5 mb-6">
-                <ReactMarkdown
-                  components={{
-                    code({inline, className, children, ...props}: ComponentPropsWithoutRef<'code'> & { inline?: boolean }) {
-                      const match = /language-(\w+)/.exec(className || '');
-                      return !inline && match ? (
-                        <SyntaxHighlighter
-                          // @ts-expect-error - Type incompatibility with style prop
-                          style={materialDark}
-                          language={match[1]}
-                          PreTag="div"
-                          {...props}
-                        >
-                          {String(children).replace(/\n$/, '')}
-                        </SyntaxHighlighter>
-                      ) : (
-                        <code className={className} {...props}>
-                          {children}
-                        </code>
-                      );
-                    }
-                  }}
-                >
-                  {currentQuestionData.text.replace(/______/g, '`______`')}
-                </ReactMarkdown>
+              {/* Process the question to extract SQL blocks */}
+              {(() => {
+                const { beforeSql, sqlCode, afterSql, hasSqlBlock } = processQuestion(currentQuestionData.text);
                 
-                {/* Add input fields for answers */}
-                {currentQuestionData.text.split('______').map((_, index: number, array: string[]) => {
-                  return index < array.length - 1 ? (
-                    <div key={index} className="my-4">
-                      <input
-                        type="text"
-                        className={`px-3 py-1 border rounded-md focus:outline-none w-44
-                          ${showAnswer 
-                            ? 'bg-yellow-100 border-yellow-400' 
-                            : feedback?.correct 
-                              ? 'border-green-400 bg-green-50' 
-                              : feedback 
-                                ? 'border-red-400 bg-red-50' 
-                                : 'border-gray-300 bg-white'}`}
-                        placeholder="Ввести пропущенное слово"
-                        value={showAnswer 
-                          ? answerOptions[index] || '' 
-                          : answers[index] || ''}
-                        onChange={(e) => handleInputChange(index, e.target.value)}
-                        readOnly={showAnswer}
-                      />
+                return (
+                  <>
+                    {/* Text before SQL block */}
+                    {beforeSql && (
+                      <div className="mb-6">
+                        <ReactMarkdown>
+                          {beforeSql}
+                        </ReactMarkdown>
+                      </div>
+                    )}
+                    
+                    {/* SQL Code Editor */}
+                    <div className="bg-[#1e1e1e] rounded-lg p-5 mb-6 font-mono text-sm text-white overflow-x-auto">
+                      <div className="leading-relaxed whitespace-pre-wrap">
+                        {hasSqlBlock ? (
+                          // If there's an SQL block, use that
+                          <>
+                            {sqlCode.split('______').map((part, index, array) => (
+                              <React.Fragment key={index}>
+                                {/* Display the part of text */}
+                                <span>{part}</span>
+                                
+                                {/* Add input field if it's not the last part */}
+                                {index < array.length - 1 && (
+                                  <span className="inline-block mx-1 my-1">
+                                    <input
+                                      type="text"
+                                      className={`font-mono px-2 py-1 border rounded min-w-[120px] ${
+                                        showAnswer
+                                          ? 'border-yellow-500 bg-yellow-900/20 text-yellow-400'
+                                          : feedback?.correct
+                                          ? 'border-green-500 bg-green-900/20 text-green-400'
+                                          : feedback
+                                          ? 'border-red-500 bg-red-900/20 text-red-400'
+                                          : 'border-blue-500 bg-blue-900/20 text-blue-400'
+                                      }`}
+                                      placeholder="..."
+                                      value={showAnswer ? answerOptions[index] || '' : answers[index] || ''}
+                                      onChange={(e) => handleInputChange(index, e.target.value)}
+                                      readOnly={showAnswer}
+                                    />
+                                  </span>
+                                )}
+                              </React.Fragment>
+                            ))}
+                          </>
+                        ) : (
+                          // Fallback for questions without SQL block
+                          <>
+                            {currentQuestionData.text.split('______').map((part, index, array) => (
+                              <React.Fragment key={index}>
+                                <span>{part}</span>
+                                {index < array.length - 1 && (
+                                  <span className="inline-block mx-1 my-1">
+                                    <input
+                                      type="text"
+                                      className={`font-mono px-2 py-1 border rounded min-w-[120px] ${
+                                        showAnswer
+                                          ? 'border-yellow-500 bg-yellow-900/20 text-yellow-400'
+                                          : feedback?.correct
+                                          ? 'border-green-500 bg-green-900/20 text-green-400'
+                                          : feedback
+                                          ? 'border-red-500 bg-red-900/20 text-red-400'
+                                          : 'border-blue-500 bg-blue-900/20 text-blue-400'
+                                      }`}
+                                      placeholder="..."
+                                      value={showAnswer ? answerOptions[index] || '' : answers[index] || ''}
+                                      onChange={(e) => handleInputChange(index, e.target.value)}
+                                      readOnly={showAnswer}
+                                    />
+                                  </span>
+                                )}
+                              </React.Fragment>
+                            ))}
+                          </>
+                        )}
+                      </div>
                     </div>
-                  ) : null;
-                })}
-              </div>
+                    
+                    {/* Text after SQL block */}
+                    {afterSql && (
+                      <div className="mb-6">
+                        <ReactMarkdown>
+                          {afterSql}
+                        </ReactMarkdown>
+                      </div>
+                    )}
+                  </>
+                );
+              })()}
+              
+              {/* Preview of completed query */}
+              {answers.some(a => a.trim() !== '') && !showAnswer && (
+                <div className="mb-6">
+                  <h4 className="text-lg font-medium mb-2">Предпросмотр запроса:</h4>
+                  <div className="bg-[#1e1e1e] rounded-lg p-5 font-mono text-sm text-white overflow-x-auto">
+                    <pre className="whitespace-pre-wrap">
+                      {(() => {
+                        const { sqlCode, hasSqlBlock } = processQuestion(currentQuestionData.text);
+                        const textToProcess = hasSqlBlock ? sqlCode : currentQuestionData.text;
+                        
+                        return textToProcess.split('______').reduce((result, part, idx) => {
+                          return idx < answers.length
+                            ? result + part + (answers[idx] || '______')
+                            : result + part;
+                        }, '');
+                      })()}
+                    </pre>
+                  </div>
+                </div>
+              )}
               
               {feedback && (
                 <div className={`mt-4 p-3 rounded ${feedback.correct ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
@@ -398,14 +497,12 @@ export default function MediumExercisePage() {
                 </div>
               )}
               
-
-              
               {showAnswer && (
                 <div className="mt-4 mb-6 p-3 bg-yellow-50 border border-yellow-200 rounded">
                   <p className="font-medium">Правильный запрос:</p>
-                  <code className="block mt-2 p-2 bg-gray-100 rounded font-mono text-sm whitespace-pre-wrap">
-                    {solutionQuery}
-                  </code>
+                  <div className="bg-[#1e1e1e] rounded-lg p-5 mt-2 font-mono text-sm text-white overflow-x-auto">
+                    <pre className="whitespace-pre-wrap">{solutionQuery}</pre>
+                  </div>
                 </div>
               )}
               
