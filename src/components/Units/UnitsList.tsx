@@ -2,7 +2,7 @@ import { Unit } from "@/types";
 import Link from "next/link";
 
 interface UnitsListProps {
-  visibleUnits: Unit[];
+  visibleUnits: number
   units: Unit[];
   onLoadMore: () => void;
 }
@@ -11,7 +11,7 @@ export default function UnitsList({ visibleUnits, units, onLoadMore }: UnitsList
   return (
     <div className="lg:max-w-5xl mx-auto px-20 pb-10 pt-24 relative">
       <div className="space-y-6">
-        {visibleUnits.map((unit) => (
+        {units.slice(0,visibleUnits).map((unit) => (
           <div
             key={unit.id} 
             className="bg-bg2 p-6 rounded-lg shadow-orange hover:bg-blue-400 ease-in-out duration-300 relative overflow-hidden"
@@ -29,7 +29,7 @@ export default function UnitsList({ visibleUnits, units, onLoadMore }: UnitsList
       </div>
 
       {/* Load More Button */}
-      {visibleUnits.length < units.length && (
+      {visibleUnits < units.length && (
         <div className="flex justify-center mt-12">
           <button 
             onClick={onLoadMore}

@@ -17,7 +17,7 @@ export default function Footer(){
 return (
         <footer className="text-xl font-jura bg-[#202020] text-white w-full mt-auto relative">
             {/* Wave at the top of footer */}
-            <div className="absolute left-0 w-full top-0 -translate-y-full overflow-hidden">
+            <div className="absolute left-0 w-full top-1 -translate-y-full overflow-hidden">
                 <WaveDark className="w-full"/>
             </div>
             

@@ -237,15 +237,6 @@ export default function QuizExercisePage() {
     }
   };
 
-  const handleShareResults = () => {
-    // Implementation for sharing results
-    alert("Поделиться результатом");
-  };
-
-  const handleReturnToList = () => {
-    router.push('/units');
-  };
-
   if (isLoading) {
     return (
       <main className="min-h-screen flex flex-col bg-[#f0f5ff]">
@@ -342,8 +333,6 @@ export default function QuizExercisePage() {
             score={score}
             totalQuestions={totalQuestions}
             timeSpent={timeSpent}
-            onShare={handleShareResults}
-            onReturn={handleReturnToList}
           />
         )}
       </div>

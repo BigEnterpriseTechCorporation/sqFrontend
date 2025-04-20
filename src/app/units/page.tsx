@@ -15,14 +15,16 @@ import {useRouter} from "next/navigation";
 export default function Units() {
     const router = useRouter();
 
+    // Number of units to load initially and on "Load more" click
+    const UNITS_PER_PAGE = 4
+
     const [units, setUnits] = useState<Unit[]>([])
-    const [visibleUnits, setVisibleUnits] = useState<Unit[]>([])
+    const [visibleUnits, setVisibleUnits] = useState(UNITS_PER_PAGE)
     const [error, setError] = useState<string | null>(null)
     const [loading, setLoading] = useState(true)
     const { getToken, hasToken } = useToken()
 
-    // Number of units to load initially and on "Load more" click
-    const UNITS_PER_PAGE = 4
+
 
     useEffect(() => {
         const fetchUnits = async () => {
@@ -40,8 +42,6 @@ export default function Units() {
                 
                 const response = await allUnits({ token })
                 setUnits(response)
-                // Initially show only the first batch of units
-                setVisibleUnits(response.slice(0, UNITS_PER_PAGE))
             } catch (err) {
                 setError(err instanceof Error ? err.message : 'Failed to fetch units')
             } finally {
@@ -53,8 +53,8 @@ export default function Units() {
     }, [getToken, hasToken, router]);
 
     const handleLoadMore = () => {
-        const nextUnits = units.slice(visibleUnits.length, visibleUnits.length + UNITS_PER_PAGE)
-        setVisibleUnits(prev => [...prev, ...nextUnits])
+        console.info(visibleUnits.length, UNITS_PER_PAGE)
+        setVisibleUnits((prev) => prev + UNITS_PER_PAGE)
     }
 
     if (loading) {

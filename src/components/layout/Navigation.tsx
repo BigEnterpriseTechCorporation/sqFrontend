@@ -126,7 +126,7 @@ export default function Navigation(){
 
                     {isLoggedIn && (
                         <Link 
-                            className="px-16 py-3.5 border-bg1 border-2 rounded-xl hover:bg-bg1 hover:text-black w-4/5 text-center" 
+                            className="px-16 py-3.5 border-bg1 border-2 rounded-xl hover:bg-bg1 hover:text-black text-center"
                             href="/profile"
                             onClick={() => setIsMenuOpen(false)}
                         >
