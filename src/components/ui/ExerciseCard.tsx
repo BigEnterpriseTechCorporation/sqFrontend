@@ -2,7 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import { ExerciseCardProps } from '@/types/components';
 
-export default function ExerciseCard({ exercise }: ExerciseCardProps) {
+export default function ExerciseCard({ exercise, progress }: ExerciseCardProps) {
   // Map difficulty number to text
   const difficultyText = ["Easy", "Medium", "Hard", "Expert"][exercise.difficulty] || "Unknown";
   
@@ -33,10 +33,9 @@ export default function ExerciseCard({ exercise }: ExerciseCardProps) {
           COMPLETED
         </div>
       )}
-    <div className="bg-bg2 rounded-5 overflow-hidden transition-shadow duration-300 shadow-orange p-6 flex flex-col justify-between">
-
+      
       {/* Card content */}
-
+      <div className="p-6 flex flex-col justify-between h-full">
         <div>
           <h3 className="text-xl font-bold mb-2 text-gray-800">{exercise.title}</h3>
           {/* Difficulty badge */}
@@ -49,7 +48,7 @@ export default function ExerciseCard({ exercise }: ExerciseCardProps) {
         {/* Action button */}
         <Link 
           href={exerciseLink}
-          className={`inline-block py-2 px-4 rounded-lg transition-colors duration-200 ${
+          className={`inline-block py-2 px-4 rounded-lg transition-colors duration-200 w-fit ${
             progress?.isCompleted 
               ? 'bg-green-500 hover:bg-green-600 text-white' 
               : 'bg-bg1 shadow-orange hover:bg-blue-200'
@@ -58,19 +57,6 @@ export default function ExerciseCard({ exercise }: ExerciseCardProps) {
           {progress?.isCompleted ? 'Review Exercise' : 'Open Exercise'}
         </Link>
       </div>
-
-
-
-          {/* Action button */}
-          <Link
-              href={exerciseLink}
-              className=" w-fit bg-bg1 shadow-orange py-2 px-4 rounded-lg hover:bg-blue-200 transition-colors duration-200"
-          >
-            Open Exercise
-          </Link>
-
-
-
     </div>
   );
 } 
