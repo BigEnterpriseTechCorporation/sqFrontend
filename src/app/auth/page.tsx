@@ -6,6 +6,7 @@ import Logo from "@/assets/icons/logo.svg";
 import Image from "next/image";
 import { Eye, EyeOff } from "lucide-react";
 import catThumsUp from "@/assets/images/cat-thumsUp.png"
+import Back from "@/components/layout/Back";
 
 export default function Auth() {
     const [fullName, setFullName] = useState("");
@@ -63,10 +64,10 @@ export default function Auth() {
     }
 
     return (
-        <main className="h-screen bg-bg1 px-20 py-16 grid grid-cols-5 items-center">
+        <main className="h-screen bg-bg1 px-40 py-16 grid grid-cols-5 items-center">
             {/* Left Column */}
 
-                <div className="bg-white col-span-2 rounded-5 self-stretch px-12 grid grid-rows-[min-content_auto] w-full">
+            <div className="bg-bg2 col-span-2 rounded-5 self-stretch px-12 grid grid-rows-[min-content_auto] w-full">
                     <div>
                         <h1 className="text-5xl font-bold mb-6 text-center pt-16">Раскрой силу данных</h1>
                         <p className="text-lg mb-12 text-center">
@@ -205,7 +206,7 @@ export default function Auth() {
 
             </div>
 
-            <Link href={"/"} className={"absolute top-4 left-4"}>back</Link>
+            <Back/>
         </main>
     );
 }

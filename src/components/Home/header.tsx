@@ -12,7 +12,7 @@ export default function Header(){
                         Раскрой силу <br/>данных
                     </h1>
                     <h2 className="text-xl mb-16">Осваивайте SQL быстрее, умнее и лучше</h2>
-                    <Button href="/auth">
+                    <Button href="/auth" className={"text-2xl"}>
                         Начать
                     </Button>
                 </div>

@@ -4,10 +4,9 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { UnitWithExercises } from "@/types";
 import unitAndExercises from "@/hooks/content/unitAndExercises";
+import { useToken } from "@/hooks/auth";
 import Navigation from "@/components/layout/Navigation";
 import UnitTitle from "@/components/layout/UnitTitle";
-import { serialize } from 'next-mdx-remote/serialize';
-import { MDXRemoteSerializeResult } from 'next-mdx-remote';
 
 // Imported components
 import UnitHeader from "@/components/Unit/UnitHeader";
@@ -15,23 +14,31 @@ import UnitDescription from "@/components/Unit/UnitDescription";
 import ExercisesList from "@/components/Unit/ExercisesList";
 import LoadingSpinner from "@/components/Unit/LoadingSpinner";
 import ErrorMessage from "@/components/Unit/ErrorMessage";
+import Footer from "@/components/layout/Footer";
 
 export default function UnitPage() {
     const params = useParams();
+    const { getToken, hasToken } = useToken();
     const [unit, setUnit] = useState<UnitWithExercises | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
-    const [mdxSource, setMdxSource] = useState<MDXRemoteSerializeResult<Record<string, unknown>, Record<string, unknown>> | null>(null);
+    const [markdownContent, setMarkdownContent] = useState<string>("");
 
     useEffect(() => {
         const fetchUnitAndExercises = async () => {
             try {
-                const token = localStorage.getItem('token');
-                if (!token) {
+                if (!hasToken()) {
                     setError('No authentication token found');
                     return;
                 }
+                const token = getToken();
                 const unitId = params.unitId as string;
+                
+                if (!token) {
+                    setError('Authentication token is null');
+                    return;
+                }
+                
                 if (!unitId) {
                     setError('No unit ID provided');
                     return;
@@ -47,15 +54,9 @@ export default function UnitPage() {
                 
                 setUnit(processedUnit);
                 
-                // Process markdown content
+                // Store the raw markdown
                 if (processedUnit.description) {
-                    try {
-                        const mdxSource = await serialize(processedUnit.description);
-                        setMdxSource(mdxSource);
-                    } catch (err) {
-                        console.error("Failed to process markdown:", err);
-                        // Continue without markdown rendering if it fails
-                    }
+                    setMarkdownContent(processedUnit.description);
                 }
             } catch (err) {
                 setError(err instanceof Error ? err.message : 'Failed to fetch unit and exercises');
@@ -67,7 +68,7 @@ export default function UnitPage() {
         if (params.unitId) {
             fetchUnitAndExercises();
         }
-    }, [params.unitId]);
+    }, [params.unitId, hasToken, getToken]);
 
     if (loading) {
         return <LoadingSpinner />;
@@ -86,19 +87,21 @@ export default function UnitPage() {
             <Navigation/>
             <UnitTitle title={unit.title}/>
 
-            <div className="max-w-5xl mx-auto px-4 py-10 min-h-screen">
+            <div className="max-w-5xl mx-auto px-4 py-10 mb-52 min-h-screen">
                 <UnitHeader 
                     ownerName={unit.ownerName} 
                     exerciseCount={unit.exerciseCount} 
                 />
                 
                 <UnitDescription 
-                    mdxSource={mdxSource} 
+                    markdownContent={markdownContent}
                     fallbackText={unit.description} 
                 />
                 
                 <ExercisesList exercises={unit.exercises} />
             </div>
+
+            <Footer/>
         </main>
     );
 }

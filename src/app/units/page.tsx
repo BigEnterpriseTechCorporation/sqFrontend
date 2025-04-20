@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import allUnits from "@/hooks/content/allUnits"
+import { useToken } from "@/hooks/auth"
 import { Unit } from "@/types"
 import UnitTitle from "@/components/layout/UnitTitle"
 import Navigation from "@/components/layout/Navigation"
@@ -9,12 +10,16 @@ import Footer from "@/components/layout/Footer"
 import UnitsList from "@/components/Units/UnitsList"
 import LoadingState from "@/components/Units/LoadingState"
 import ErrorState from "@/components/Units/ErrorState"
+import {useRouter} from "next/navigation";
 
 export default function Units() {
+    const router = useRouter();
+
     const [units, setUnits] = useState<Unit[]>([])
     const [visibleUnits, setVisibleUnits] = useState<Unit[]>([])
     const [error, setError] = useState<string | null>(null)
     const [loading, setLoading] = useState(true)
+    const { getToken, hasToken } = useToken()
 
     // Number of units to load initially and on "Load more" click
     const UNITS_PER_PAGE = 4
@@ -22,11 +27,17 @@ export default function Units() {
     useEffect(() => {
         const fetchUnits = async () => {
             try {
-                const token = localStorage.getItem('token')
-                if (!token) {
-                    setError('No authentication token found')
+                if (!hasToken()) {
+                    router.push("/auth")
                     return
                 }
+                const token = getToken()
+                
+                if (!token) {
+                    router.push("/auth")
+                    return
+                }
+                
                 const response = await allUnits({ token })
                 setUnits(response)
                 // Initially show only the first batch of units
@@ -39,7 +50,7 @@ export default function Units() {
         }
 
         fetchUnits()
-    }, [])
+    }, [getToken, hasToken, router]);
 
     const handleLoadMore = () => {
         const nextUnits = units.slice(visibleUnits.length, visibleUnits.length + UNITS_PER_PAGE)
@@ -57,7 +68,7 @@ export default function Units() {
     return (
         <main className="min-h-screen bg-bg1">
             <Navigation />
-            <UnitTitle title="Юниты" />
+            <UnitTitle title="Юниты" className={"text-8xl"}/>
             <UnitsList 
                 visibleUnits={visibleUnits} 
                 units={units} 

@@ -14,7 +14,7 @@ export default function UnitsList({ visibleUnits, units, onLoadMore }: UnitsList
         {visibleUnits.map((unit) => (
           <div 
             key={unit.id} 
-            className="bg-bg2 p-6 rounded-lg shadow-orange hover:px-10 ease-in-out duration-300 relative overflow-hidden"
+            className="bg-bg2 p-6 rounded-lg shadow-orange hover:bg-blue-400 ease-in-out duration-300 relative overflow-hidden"
           >
             <Link href={`/unit/${unit.id}`} className="block">
               <h2 className="text-3xl font-bold mb-4">{unit.title}</h2>

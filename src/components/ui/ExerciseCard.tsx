@@ -26,28 +26,31 @@ export default function ExerciseCard({ exercise }: ExerciseCardProps) {
   const exerciseLink = links[exercise.type];
 
   return (
-    <div className="bg-bg2 rounded-5 overflow-hidden transition-shadow duration-300 shadow-orange">
+    <div className="bg-bg2 rounded-5 overflow-hidden transition-shadow duration-300 shadow-orange p-6 flex flex-col justify-between">
 
       {/* Card content */}
-      <div className="p-6">
-        <h3 className="text-xl font-bold mb-2 text-gray-800">{exercise.title}</h3>
-        <p className="text-gray-700 mb-4 line-clamp-3">{exercise.description}</p>
-        
-        {/* Difficulty badge */}
-        <div className="mb-4">
-          <span className={`inline-block px-3 py-1 text-xs font-semibold rounded-full ${difficultyColor}`}>
+
+        <div>
+          <h3 className="text-xl font-bold mb-2 text-gray-800">{exercise.title}</h3>
+          {/* Difficulty badge */}
+          <div className={`w-fit px-3 py-1 text-xs font-semibold rounded-full mb-3 ${difficultyColor}`}>
             {difficultyText}
-          </span>
+          </div>
+          <p className="text-gray-700 mb-4 line-clamp-3">{exercise.description}</p>
         </div>
-        
-        {/* Action button */}
-        <Link 
-          href={exerciseLink}
-          className="inline-block bg-bg1 shadow-orange py-2 px-4 rounded-lg hover:bg-blue-200 transition-colors duration-200"
-        >
-          Open Exercise
-        </Link>
-      </div>
+
+
+
+          {/* Action button */}
+          <Link
+              href={exerciseLink}
+              className=" w-fit bg-bg1 shadow-orange py-2 px-4 rounded-lg hover:bg-blue-200 transition-colors duration-200"
+          >
+            Open Exercise
+          </Link>
+
+
+
     </div>
   );
 } 

@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import { useToken } from '@/hooks/auth';
 
 // Types
 interface Stats {
@@ -17,6 +18,7 @@ interface Stats {
 
 export default function AdminPanel() {
   const router = useRouter();
+  const { getToken, hasToken } = useToken();
   const [token, setToken] = useState<string | null>(null);
   
   // Data states
@@ -48,7 +50,14 @@ export default function AdminPanel() {
   }, [token]);
 
   useEffect(() => {
-    const storedToken = localStorage.getItem('token');
+    if (!hasToken()) {
+      router.push('/');
+      return;
+    }
+    
+    const storedToken = getToken();
+    
+    // Check if token exists
     if (!storedToken) {
       router.push('/');
       return;
@@ -67,7 +76,7 @@ export default function AdminPanel() {
     } catch {
       router.push('/');
     }
-  }, [router]);
+  }, [router, hasToken, getToken]);
   
   useEffect(() => {
     if (token) {

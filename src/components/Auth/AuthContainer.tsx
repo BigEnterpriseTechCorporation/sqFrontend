@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Logo from "@/assets/icons/logo.svg";
 import { ReactNode } from "react";
+import Back from "@/components/layout/Back";
 
 interface AuthContainerProps {
   activeTab: "login" | "register";
@@ -38,7 +39,7 @@ export default function AuthContainer({ activeTab, children }: AuthContainerProp
         {children}
       </div>
 
-      <Link href={"/"} className={"absolute top-4 left-4"}>back</Link>
+      <Back/>
     </main>
   );
 } 

@@ -2,22 +2,24 @@
 import Link from "next/link";
 import Logo from "@/assets/icons/logo.svg";
 import { useEffect, useState } from "react";
+import { useToken } from "@/hooks/auth";
 
 export default function Navigation(){
     const [isAdmin, setIsAdmin] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const { getToken, hasToken } = useToken();
     
     // Check if user is admin on component mount
     useEffect(() => {
-        // Get token from localStorage
-        const token = localStorage.getItem('token');
-        
-        if (token) {
+        if (hasToken()) {
             setIsLoggedIn(true);
             
             try {
+                // Get token from hook
+                const token = getToken();
+                
                 // Parse the JWT token (assuming it's a standard JWT with payload in the middle section)
-                const payload = JSON.parse(atob(token.split('.')[1]));
+                const payload = JSON.parse(atob(token!.split('.')[1]));
                 
                 // Check if user role is "Admin"
                 if (payload && payload.role === "Admin") {
@@ -30,10 +32,10 @@ export default function Navigation(){
             setIsLoggedIn(false);
             setIsAdmin(false);
         }
-    }, []);
+    }, [hasToken, getToken]);
 
     return <header className="w-full">
-        <nav className="flex justify-between items-center px-6 text-base text-white bg-[#202020] h-16">   
+        <nav className="flex justify-between items-center px-6 py-5 text-base text-white bg-[#202020]">
             <Link href={"/"} className="flex items-center gap-2">
                 <Logo alt="logo" className="w-7 h-7"/>
                 <span className="font-medium text-2xl">super query</span>
@@ -47,13 +49,13 @@ export default function Navigation(){
                 )}
 
                 {isLoggedIn && (
-                    <Link className={"px-16 py-3.5 border-white border-2"} href={"/profile"} >Профиль</Link>
+                    <Link className={"px-16 py-3.5 border-bg1 border-2 rounded-xl hover:bg-bg1 hover:text-black duration-300 ease-in-out"} href={"/profile"} >Профиль</Link>
                 )}
                 
                 {!isLoggedIn && (
                     <>
                         <Link className={"underline-parent"} href={"/auth"} >Регистрация</Link>
-                        <Link href={"/login"} className="bg-bg1 hover:bg-bg2 duration-300 ease-in-out text-[#202020] px-10 py-1.5 rounded-md font-medium">Вход</Link>
+                        <Link href={"/login"} className="px-16 py-3.5 border-bg1 border-2 rounded-xl hover:bg-bg1 hover:text-black duration-300 ease-in-out duration-300 ease-in-out font-medium">Вход</Link>
                     </>
                 )}
 

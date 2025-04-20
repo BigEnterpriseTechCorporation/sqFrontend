@@ -1,11 +1,13 @@
 import { useState } from 'react'
 import self from '@/hooks/auth/self'
+import { useToken } from '@/hooks/auth'
 import { User } from '@/types'
 
 export default function useUpdateUsername() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
+  const { getToken, hasToken } = useToken()
 
   const updateUsername = async (
     username: string, 
@@ -16,9 +18,13 @@ export default function useUpdateUsername() {
     setSuccess(null)
     
     try {
-      const token = localStorage.getItem('token')
-      if (!token) {
+      if (!hasToken()) {
         throw new Error('No authentication token found')
+      }
+      const token = getToken()
+      
+      if (!token) {
+        throw new Error('Authentication token is null')
       }
       
       const response = await fetch('https://rpi.tail707b9c.ts.net/api/v1/Account/profile', {

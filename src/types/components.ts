@@ -1,5 +1,4 @@
 import { Exercise, Unit, User, UserProgress } from './index';
-import { MDXRemoteSerializeResult } from 'next-mdx-remote';
 
 // Component Props Types
 export interface UserCardProps {
@@ -32,7 +31,7 @@ export interface UnitHeaderProps {
 }
 
 export interface UnitDescriptionProps {
-  mdxSource: MDXRemoteSerializeResult<Record<string, unknown>> | null
+  markdownContent?: string
   fallbackText: string
 }
 

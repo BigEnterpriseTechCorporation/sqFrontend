@@ -86,10 +86,6 @@ export default function LoginForm() {
             >
                 Вход в аккаунт
             </button>
-            
-            <div className="text-xs text-gray-500 text-center mt-4">
-                Нажимая на кнопку &quot;Вход в аккаунт&quot; вы даете свое согласие на обработку персональных данных
-            </div>
         </form>
     );
 } 

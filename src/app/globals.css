@@ -54,17 +54,3 @@ React-split requirements
 .gutter.gutter-horizontal {
   cursor: col-resize;
 }
-
-/* Add vertical stripes background pattern class */
-@layer utilities {
-  .bg-stripes {
-    background-image: repeating-linear-gradient(
-      to right,
-      rgba(255, 255, 255, 0.1),
-      rgba(255, 255, 255, 0.1) 12px,
-      transparent 12px,
-      transparent 24px
-    );
-  }
-}
-

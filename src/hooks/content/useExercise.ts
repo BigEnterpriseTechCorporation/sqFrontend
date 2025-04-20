@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Exercise } from '@/types';
 import { ExerciseProgress } from '@/types/api';
 import exerciseFetch from './exercise';
+import { useToken } from '@/hooks/auth';
 
 /**
  * Type definition for user statistics
@@ -36,6 +37,9 @@ export function useExercise(id: string) {
   
   // State for tracking data loading (currently static)
   const [loadingProgress] = useState(false);
+
+  // Use the token hook
+  const { getToken, hasToken } = useToken();
   
   /**
    * Calculate user statistics based on exercise progress
@@ -55,16 +59,21 @@ export function useExercise(id: string) {
   useEffect(() => {
     const fetchExercise = async () => {
       try {
-        // Get authentication token from local storage
-        const token = localStorage.getItem('token');
-        if (!token) {
+        // Get authentication token using the hook
+        if (!hasToken()) {
           console.error('No authentication token found');
           return;
         }
+        const token = getToken();
         
-        // Validate exercise ID
+        // Validate exercise ID and token
         if (!id) {
           console.error('No exercise ID provided');
+          return;
+        }
+        
+        if (!token) {
+          console.error('Token is null');
           return;
         }
         
@@ -83,7 +92,7 @@ export function useExercise(id: string) {
     if (id) {
       fetchExercise();
     }
-  }, [id]);
+  }, [id, hasToken, getToken]);
 
   // Return all relevant state and functions
   return {
