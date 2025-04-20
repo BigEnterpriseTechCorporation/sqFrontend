@@ -66,7 +66,7 @@ export default function ExercisesPage() {
       if (savedSizes) {
         try {
           return JSON.parse(savedSizes);
-        } catch (e) {
+        } catch {
           // Fallback to default if parsing fails
           return { mobile: [50, 50], desktop: [50, 50] };
         }

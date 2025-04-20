@@ -50,7 +50,7 @@ export default function Units() {
         }
 
         fetchUnits()
-    }, []);
+    }, [getToken, hasToken, router]);
 
     const handleLoadMore = () => {
         const nextUnits = units.slice(visibleUnits.length, visibleUnits.length + UNITS_PER_PAGE)
