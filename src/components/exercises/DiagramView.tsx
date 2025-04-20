@@ -7,7 +7,7 @@ import ReactFlow, {
   NodeTypes,
   Handle,
   Position,
-  NodeProps,
+  NodeProps
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { TableInfo } from '@/types/database';
@@ -31,7 +31,7 @@ const TableNode = ({ data }: NodeProps) => {
       
       {/* Table columns with types */}
       <div className="text-sm">
-        {table.columns.map((col) => (
+        {table.columns.map((col: string) => (
           <div key={col} className="flex justify-between py-1 border-b border-[#333333] last:border-b-0">
             <span className="text-green-400">{col}</span>
             <span className="text-gray-400 text-xs italic">
@@ -82,6 +82,13 @@ const detectRelationships = (tables: TableInfo[]): Edge[] => {
   
   return edges;
 };
+
+// Define the BackgroundVariant enum to match reactflow's expected type
+enum BackgroundVariant {
+  Lines = 'lines',
+  Dots = 'dots',
+  Cross = 'cross'
+}
 
 export function DiagramView({ tables }: DiagramViewProps) {
   // Define node types for using custom nodes
@@ -138,7 +145,7 @@ export function DiagramView({ tables }: DiagramViewProps) {
           attributionPosition="bottom-right"
         >
           <Controls />
-          <Background color="#444" variant="dots" />
+          <Background color="#444" variant={BackgroundVariant.Lines} />
         </ReactFlow>
       </div>
       <div className="text-sm text-gray-400 mt-4">
