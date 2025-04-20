@@ -14,7 +14,7 @@ interface TablesViewProps {
  * 
  * Displays information about all tables in the database, including:
  * - Table names
- * - Column definitions
+ * - Column definitions with types
  * - Sample data from each table
  * 
  * This component helps users understand the database schema
@@ -29,10 +29,16 @@ export function TablesView({ tables }: TablesViewProps) {
           {/* Table name heading */}
           <h3 className="text-lg font-medium mb-2">{table.name}</h3>
           
-          {/* Column names list */}
+          {/* Column names with types */}
           <div className="mb-2">
             <span className="text-gray-400">Columns: </span>
-            <span className="text-green-400">{table.columns.join(', ')}</span>
+            <div className="ml-2">
+              {table.columns.map((col) => (
+                <div key={col} className="text-green-400">
+                  {col} <span className="text-gray-400 italic">({table.columnTypes?.[col] || 'unknown'})</span>
+                </div>
+              ))}
+            </div>
           </div>
           
           {/* Sample data table */}
@@ -43,6 +49,9 @@ export function TablesView({ tables }: TablesViewProps) {
                 {table.columns.map((col) => (
                   <th key={col} className="border border-[#444444] px-2 py-1 text-left">
                     {col}
+                    <div className="text-xs text-gray-400">
+                      {table.columnTypes?.[col] || ''}
+                    </div>
                   </th>
                 ))}
               </tr>

@@ -11,6 +11,7 @@ import { ExerciseEditor } from '@/components/exercises/ExerciseEditor';
 import { ResultsPanel } from '@/components/exercises/ResultsPanel';
 import { ExerciseDescription } from '@/components/exercises/ExerciseDescription';
 import { TablesView } from '@/components/exercises/TablesView';
+import { DiagramView } from '@/components/exercises/DiagramView';
 
 /**
  * Global declaration for SQLite Web Assembly module
@@ -43,7 +44,7 @@ export default function ExercisesPage() {
   const [code, setCode] = useState('');
   
   // Controls which tab is displayed in the right panel
-  const [activeTab, setActiveTab] = useState<'description' | 'results' | 'tables'>('description');
+  const [activeTab, setActiveTab] = useState<'description' | 'results' | 'tables' | 'diagram'>('description');
   
   /**
    * Custom hook that fetches exercise data
@@ -107,6 +108,25 @@ export default function ExercisesPage() {
     executeQuery(); // Execute the solution query to show results
   };
 
+  /**
+   * Executes the current query and switches to results tab
+   */
+  const handleExecuteQuery = () => {
+    executeQuery();
+    setActiveTab('results'); // Switch to results tab when query is executed
+  };
+
+  /**
+   * Submits the solution and switches to results tab
+   */
+  const handleSubmitSolution = () => {
+    // First execute the query to show results immediately
+    executeQuery();
+    // Then submit the solution for validation
+    submitSolution();
+    setActiveTab('results'); // Switch to results tab when solution is submitted
+  };
+
   return (
     <main className="h-screen flex flex-col bg-[#1E1E1E]">
       <Navigation/>
@@ -122,8 +142,8 @@ export default function ExercisesPage() {
         <ExerciseEditor 
           code={code}
           onCodeChange={handleEditorChange}
-          onExecute={executeQuery}
-          onSubmit={submitSolution}
+          onExecute={handleExecuteQuery}
+          onSubmit={handleSubmitSolution}
           isSubmitting={isSubmitting}
         />
 
@@ -161,6 +181,16 @@ export default function ExercisesPage() {
             >
               Tables
             </button>
+            <button
+                className={`px-4 py-2 text-sm font-medium ${
+                    activeTab === 'diagram'
+                        ? 'text-white border-b-2 border-green-600'
+                        : 'text-gray-400 hover:text-white'
+                }`}
+                onClick={() => setActiveTab('diagram')}
+            >
+              Diagram
+            </button>
           </div>
 
           {/* Tab content based on activeTab state */}
@@ -178,6 +208,8 @@ export default function ExercisesPage() {
               queryResult={queryResult}
               solutionResult={solutionResult}
             />
+          ) : activeTab === 'diagram' ? (
+            <DiagramView tables={tables} />
           ) : (
             <TablesView tables={tables} />
           )}

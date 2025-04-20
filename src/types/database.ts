@@ -26,5 +26,6 @@ export interface QueryResult {
 export interface TableInfo {
   name: string
   columns: string[]
+  columnTypes?: Record<string, string>
   sampleData: Record<string, string | number | boolean | null>[]
 } 

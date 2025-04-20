@@ -78,6 +78,11 @@ export interface FormFieldProps {
 
 export interface ExerciseCardProps {
   exercise: Exercise
+  progress?: {
+    exerciseId: string
+    isCompleted: boolean
+    attempts: number
+  }
 }
 
 export interface AuthContainerProps {
