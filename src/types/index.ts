@@ -92,11 +92,15 @@ export interface SolutionData {
 
 // User progress type from hooks
 export interface UserProgress {
+  userId: string
+  username: string
   totalExercises: number
-  completedExercises: number
-  completionRate: number
-  exercisesByDifficulty: Record<string, number>
-  exercisesByType: Record<string, number>
-  lastCompletedExercises: Exercise[]
-  completedByDifficulty: Record<string, number>
+  solvedExercises: number
+  totalAttempts: number
+  likedUnits: number
+  completionPercentage: number
+  exercisesByDifficulty?: Record<string, number>
+  exercisesByType?: Record<string, number>
+  lastCompletedExercises?: Exercise[]
+  completedByDifficulty?: Record<string, number>
 } 

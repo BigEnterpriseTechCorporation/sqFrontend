@@ -62,14 +62,16 @@ export default function ProfilePage() {
       // Apply data safeguards before setting state
       const safeProgressData = {
         ...progressData,
+        userId: progressData.userId || '',
+        username: progressData.username || '',
         totalExercises: progressData.totalExercises || 0,
-        completedExercises: progressData.completedExercises || 0,
-        completionRate: 
-          typeof progressData.completionRate === 'number' && !isNaN(progressData.completionRate)
-            ? progressData.completionRate
-            : (progressData.totalExercises > 0 
-                ? progressData.completedExercises / progressData.totalExercises 
-                : 0),
+        solvedExercises: progressData.solvedExercises || 0,
+        totalAttempts: progressData.totalAttempts || 0,
+        likedUnits: progressData.likedUnits || 0,
+        completionPercentage: 
+          typeof progressData.completionPercentage === 'number' && !isNaN(progressData.completionPercentage)
+            ? progressData.completionPercentage
+            : 0,
         exercisesByDifficulty: progressData.exercisesByDifficulty || {},
         exercisesByType: progressData.exercisesByType || {},
         lastCompletedExercises: progressData.lastCompletedExercises || [],
@@ -81,9 +83,13 @@ export default function ProfilePage() {
       console.error('Failed to fetch progress:', err)
       // Set a default safe progress object if fetch fails
       setProgress({
+        userId: '',
+        username: '',
         totalExercises: 0,
-        completedExercises: 0,
-        completionRate: 0,
+        solvedExercises: 0,
+        totalAttempts: 0,
+        likedUnits: 0,
+        completionPercentage: 0,
         exercisesByDifficulty: {},
         exercisesByType: {},
         lastCompletedExercises: [],

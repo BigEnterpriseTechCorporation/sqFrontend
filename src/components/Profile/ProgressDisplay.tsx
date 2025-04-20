@@ -17,17 +17,25 @@ export default function ProgressDisplay({ progress, isLoading }: ProgressDisplay
             <div className="flex justify-between items-end mb-2">
               <h3 className="text-lg font-semibold">Completion Rate</h3>
               <span className="text-lg font-bold text-purple-600">
-                {`${Math.round((progress?.completionRate || 0) * 100)}%`}
+                {`${progress?.completionPercentage?.toFixed(2) || 0}%`}
               </span>
             </div>
             <div className="h-4 w-full bg-gray-200 rounded-full overflow-hidden">
               <div 
                 className="h-full bg-purple-600 rounded-full"
-                style={{ width: `${Math.round((progress?.completionRate || 0) * 100)}%` }}
+                style={{ width: `${progress?.completionPercentage || 0}%` }}
               ></div>
             </div>
             <div className="mt-2 text-sm text-gray-600">
-              {progress?.completedExercises || 0} of {progress?.totalExercises || 0} exercises completed
+              {progress?.solvedExercises || 0} of {progress?.totalExercises || 0} exercises completed
+            </div>
+          </div>
+          
+          {/* Additional Statistics */}
+          <div>
+            <div className="bg-gray-100 p-4 rounded-lg">
+              <h4 className="text-sm font-medium text-gray-600 mb-1">Total Attempts</h4>
+              <p className="text-xl font-bold">{progress?.totalAttempts || 0}</p>
             </div>
           </div>
         </div>
