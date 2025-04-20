@@ -1,5 +1,6 @@
 import { QueryResult } from '@/types/database';
 import { SolutionSubmissionResponse } from '@/types/api';
+import Link from 'next/link';
 
 /**
  * Props for the ResultsPanel component
@@ -20,6 +21,7 @@ interface ResultsPanelProps {
  * 1. Showing error messages when queries fail
  * 2. Displaying validation feedback (correct/incorrect)
  * 3. Rendering the query result data in a table format
+ * 4. Showing a "Back to Units" button when exercise is correctly solved
  * 
  * The component prioritizes error handling, ensuring users get clear
  * feedback when their SQL has syntax or logical errors.
@@ -57,6 +59,18 @@ export function ResultsPanel({ queryResult, solutionResult }: ResultsPanelProps)
           <div className="text-xs text-gray-400 mt-2">
             Attempt {solutionResult.attemptCount} of this exercise
           </div>
+          
+          {/* Back to Units button (shown only when solution is correct) */}
+          {solutionResult.isCorrect && (
+            <div className="mt-4">
+              <Link 
+                href="/units" 
+                className="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded transition-colors duration-300"
+              >
+                Back to Units
+              </Link>
+            </div>
+          )}
         </div>
       )}
       

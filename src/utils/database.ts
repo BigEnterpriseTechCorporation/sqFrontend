@@ -15,6 +15,7 @@ interface QueryResult {
 interface TableInfo {
   name: string;        // Name of the table
   columns: string[];   // Names of the columns in the table
+  columnTypes?: Record<string, string>; // Types of the columns
   sampleData: Record<string, string | number | boolean | null>[];  // Sample rows from the table (limited to 5)
 }
 
@@ -179,37 +180,46 @@ export class DatabaseManager {
       });
 
       // For each table, get its structure and sample data
-      return tables.map(table => {
-        const tableName = table.name as string;
-        
-        // Get column information
-        const columnsQuery = `PRAGMA table_info(${tableName})`;
-        const columns: Record<string, unknown>[] = [];
-        
-        // Ensure db is not null before calling exec
-        if (!this.db) return { name: tableName, columns: [], sampleData: [] };
-        
-        this.db.exec({
-          sql: columnsQuery,
-          rowMode: "object",
-          resultRows: columns,
-        });
+      return tables
+        .filter(table => (table.name as string) !== 'sqlean_define') // Filter out sqlean_define table
+        .map(table => {
+          const tableName = table.name as string;
+          
+          // Get column information
+          const columnsQuery = `PRAGMA table_info(${tableName})`;
+          const columns: Record<string, unknown>[] = [];
+          
+          // Ensure db is not null before calling exec
+          if (!this.db) return { name: tableName, columns: [], sampleData: [] };
+          
+          this.db.exec({
+            sql: columnsQuery,
+            rowMode: "object",
+            resultRows: columns,
+          });
 
-        // Get sample data (first 5 rows)
-        const sampleQuery = `SELECT * FROM ${tableName} LIMIT 5`;
-        const sampleData: Record<string, string | number | boolean | null>[] = [];
-        this.db.exec({
-          sql: sampleQuery,
-          rowMode: "object",
-          resultRows: sampleData as unknown as Record<string, unknown>[],
-        });
+          // Create a map of column names to types
+          const columnTypes: Record<string, string> = {};
+          columns.forEach(col => {
+            columnTypes[col.name as string] = col.type as string;
+          });
 
-        return {
-          name: tableName,
-          columns: columns.map(col => col.name as string),
-          sampleData
-        };
-      });
+          // Get sample data (first 5 rows)
+          const sampleQuery = `SELECT * FROM ${tableName} LIMIT 5`;
+          const sampleData: Record<string, string | number | boolean | null>[] = [];
+          this.db.exec({
+            sql: sampleQuery,
+            rowMode: "object",
+            resultRows: sampleData as unknown as Record<string, unknown>[],
+          });
+
+          return {
+            name: tableName,
+            columns: columns.map(col => col.name as string),
+            columnTypes,
+            sampleData
+          };
+        });
     } catch (error) {
       console.error('Failed to fetch tables:', error);
       return [];

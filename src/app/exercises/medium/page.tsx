@@ -7,6 +7,11 @@ import Footer from "@/components/layout/Footer";
 import UnitTitle from "@/components/layout/UnitTitle";
 import exerciseFetch from "@/hooks/content/exercise";
 import { Exercise, Question } from '@/types';
+import { API_URL } from '@/constants';
+import ReactMarkdown from 'react-markdown';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { materialDark } from 'react-syntax-highlighter/dist/cjs/styles/prism';
+import type { ComponentPropsWithoutRef } from 'react';
 
 export default function MediumExercisePage() {
   const searchParams = useSearchParams();
@@ -118,11 +123,11 @@ export default function MediumExercisePage() {
     setShowAnswer(false);
   };
 
-  const checkAnswer = () => {
+  const checkAnswer = async () => {
     const questions = exercise?.questions || generatedQuestions;
     const currentQuestionData = questions[currentQuestion];
     
-    if (!currentQuestionData) return;
+    if (!currentQuestionData || !exercise?.id) return;
     
     // Get the solution query from the exercise or the question
     const solutionQuery = (currentQuestionData as Question).solutionQuery || exercise?.solutionQuery || '';
@@ -149,26 +154,81 @@ export default function MediumExercisePage() {
         break;
       }
     }
-    
-    // Alternative approach: check if combining the text parts with the answers forms a solution
-    // that would be equivalent to the solution query (not implemented here)
-    
-    if (isCorrect) {
-      setFeedback({
-        correct: true,
-        message: 'Правильно! Хорошая работа.'
+
+    // Get the token for authentication
+    const token = localStorage.getItem('token');
+    if (!token) {
+      console.error('No authentication token found');
+      return;
+    }
+
+    try {
+      // Prepare user's solution query based on answers
+      let userQuery = solutionQuery;
+      if (!isCorrect) {
+        // If incorrect, construct user's attempted query
+        userQuery = currentQuestionData.text;
+        userInputs.forEach((answer, index) => {
+          userQuery = userQuery.replace('______', answer);
+        });
+      }
+
+      // Submit solution to API
+      const response = await fetch(`${API_URL}/ExerciseSolutions/${exercise.id}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          query: userQuery
+        })
       });
+
+      if (!response.ok) {
+        throw new Error('Failed to submit solution');
+      }
+
+      const result = await response.json();
+      console.log('Solution submission result:', result);
       
-      // If this is the last question, mark exercise as completed
+      // Use API result to update feedback if available
+      if (result.feedback) {
+        setFeedback({
+          correct: result.isCorrect,
+          message: result.feedback
+        });
+      } else {
+        // Otherwise use client-side validation result
+        setFeedback({
+          correct: isCorrect,
+          message: isCorrect 
+            ? 'Правильно! Хорошая работа.' 
+            : 'Не совсем верно. Попробуйте еще раз или посмотрите подсказку.'
+        });
+      }
+      
+      // If this is the last question and correct, mark exercise as completed
       const questionsLength = questions.length;
-      if (currentQuestion >= questionsLength - 1) {
+      if (isCorrect && currentQuestion >= questionsLength - 1) {
         setIsCompleted(true);
       }
-    } else {
+    } catch (error) {
+      console.error('Error submitting solution:', error);
+      
+      // Fall back to client-side validation if API fails
       setFeedback({
-        correct: false,
-        message: 'Не совсем верно. Попробуйте еще раз или посмотрите подсказку.'
+        correct: isCorrect,
+        message: isCorrect 
+          ? 'Правильно! Хорошая работа.' 
+          : 'Не совсем верно. Попробуйте еще раз или посмотрите подсказку.'
       });
+      
+      // If this is the last question and correct, mark exercise as completed
+      const questionsLength = questions.length;
+      if (isCorrect && currentQuestion >= questionsLength - 1) {
+        setIsCompleted(true);
+      }
     }
   };
 
@@ -281,31 +341,54 @@ export default function MediumExercisePage() {
               
               {/* Question content */}
               <div className="rounded-lg p-5 mb-6">
+                <ReactMarkdown
+                  components={{
+                    code({inline, className, children, ...props}: ComponentPropsWithoutRef<'code'> & { inline?: boolean }) {
+                      const match = /language-(\w+)/.exec(className || '');
+                      return !inline && match ? (
+                        <SyntaxHighlighter
+                          // @ts-ignore - Type incompatibility with style prop
+                          style={materialDark}
+                          language={match[1]}
+                          PreTag="div"
+                          {...props}
+                        >
+                          {String(children).replace(/\n$/, '')}
+                        </SyntaxHighlighter>
+                      ) : (
+                        <code className={className} {...props}>
+                          {children}
+                        </code>
+                      );
+                    }
+                  }}
+                >
+                  {currentQuestionData.text.replace(/______/g, '`______`')}
+                </ReactMarkdown>
+                
+                {/* Add input fields for answers */}
                 {currentQuestionData.text.split('______').map((part: string, index: number, array: string[]) => {
-                  return (
-                    <span key={index} className="text-lg leading-relaxed">
-                      {part}
-                      {index < array.length - 1 && (
-                        <input
-                          type="text"
-                          className={`mx-2 px-3 py-1 border rounded-md focus:outline-none w-44 inline-block
-                            ${showAnswer 
-                              ? 'bg-yellow-100 border-yellow-400' 
-                              : feedback?.correct 
-                                ? 'border-green-400 bg-green-50' 
-                                : feedback 
-                                  ? 'border-red-400 bg-red-50' 
-                                  : 'border-gray-300 bg-white'}`}
-                          placeholder="Ввести пропущенное слово"
-                          value={showAnswer 
-                            ? answerOptions[index] || '' 
-                            : answers[index] || ''}
-                          onChange={(e) => handleInputChange(index, e.target.value)}
-                          readOnly={showAnswer}
-                        />
-                      )}
-                    </span>
-                  );
+                  return index < array.length - 1 ? (
+                    <div key={index} className="my-4">
+                      <input
+                        type="text"
+                        className={`px-3 py-1 border rounded-md focus:outline-none w-44
+                          ${showAnswer 
+                            ? 'bg-yellow-100 border-yellow-400' 
+                            : feedback?.correct 
+                              ? 'border-green-400 bg-green-50' 
+                              : feedback 
+                                ? 'border-red-400 bg-red-50' 
+                                : 'border-gray-300 bg-white'}`}
+                        placeholder="Ввести пропущенное слово"
+                        value={showAnswer 
+                          ? answerOptions[index] || '' 
+                          : answers[index] || ''}
+                        onChange={(e) => handleInputChange(index, e.target.value)}
+                        readOnly={showAnswer}
+                      />
+                    </div>
+                  ) : null;
                 })}
               </div>
               

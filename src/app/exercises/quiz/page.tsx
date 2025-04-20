@@ -10,10 +10,19 @@ import { Exercise } from '@/types';
 import exerciseFetch from "@/hooks/content/exercise";
 import UnitTitle from "@/components/layout/UnitTitle";
 import Footer from "@/components/layout/Footer";
+import { API_URL } from '@/constants';
 
 interface QuizOption {
   text: string;
   isCorrect: boolean;
+}
+
+interface SolutionResponse {
+  isCorrect: boolean;
+  attemptCount: number;
+  exerciseId: string;
+  userId: string;
+  feedback: string | null;
 }
 
 export default function QuizExercisePage() {
@@ -31,6 +40,8 @@ export default function QuizExercisePage() {
   const [options, setOptions] = useState<QuizOption[]>([]);
   const [totalQuestions] = useState(1); // Changed from 4 to 1 to match actual question count
   const [isLoading, setIsLoading] = useState(true);
+  const [feedback, setFeedback] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const fetchExerciseData = async () => {
@@ -147,44 +158,75 @@ export default function QuizExercisePage() {
     setSelectedOption(index);
   };
 
-  const handleNextQuestion = () => {
+  const submitSolution = async (query: string): Promise<SolutionResponse> => {
+    if (!exerciseId) {
+      throw new Error('Exercise ID is required');
+    }
+
+    const token = localStorage.getItem('token');
+    if (!token) {
+      router.push('/login');
+      throw new Error('Authentication required');
+    }
+
+    try {
+      const response = await fetch(`${API_URL}/ExerciseSolutions/${exerciseId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ query })
+      });
+
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error submitting solution:', error);
+      throw error;
+    }
+  };
+
+  const handleNextQuestion = async () => {
     if (selectedOption !== null) {
-      // Check if the selected option is correct
+      // Get the selected option text
       const selectedText = options[selectedOption]?.text || '';
       
-      // Award point if this matches the solution query
-      let pointAwarded = false;
-      
-      // Check if the exercise has a solution query to compare with
-      if (exercise?.solutionQuery) {
-        // Check if the selected option matches or is part of the solution
-        const solutionQuery = exercise.solutionQuery.toLowerCase().trim();
-        const selectedTextLower = selectedText.toLowerCase().trim();
+      setIsSubmitting(true);
+      try {
+        // Submit the solution to the API for validation
+        const result = await submitSolution(selectedText);
         
-        // Check if the selection is correct by comparing with solution
-        // This can be customized based on exact requirements
-        if (solutionQuery.includes(selectedTextLower) || 
-            selectedTextLower.includes('where') || 
-            options[selectedOption]?.isCorrect) {
+        // Update score based on API response
+        if (result.isCorrect) {
           setScore(score + 1);
-          pointAwarded = true;
           console.log("Correct answer! +1 point awarded.");
         }
-      } else if (options[selectedOption]?.isCorrect) {
-        // Fallback to using the isCorrect flag if no solution query is available
-        setScore(score + 1);
-        pointAwarded = true;
-        console.log("Correct answer! +1 point awarded.");
+        
+        // Set feedback if provided
+        if (result.feedback) {
+          setFeedback(result.feedback);
+        }
+        
+        console.log(`Selected: "${selectedText}", API result: ${result.isCorrect ? 'Correct' : 'Incorrect'}`);
+        
+        // Proceed to next question or complete quiz
+        if (currentQuestionIndex < totalQuestions - 1) {
+          setCurrentQuestionIndex(currentQuestionIndex + 1);
+          setSelectedOption(null);
+          setFeedback(null); // Clear feedback for next question
+        } else {
+          setIsQuizCompleted(true);
+        }
+      } catch (error) {
+        console.error('Failed to validate solution:', error);
+        alert('Error validating your answer. Please try again.');
+      } finally {
+        setIsSubmitting(false);
       }
-      
-      console.log(`Selected: "${selectedText}", Point awarded: ${pointAwarded}`);
-    }
-    
-    if (currentQuestionIndex < totalQuestions - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
-      setSelectedOption(null);
-    } else {
-      setIsQuizCompleted(true);
     }
   };
 
@@ -258,6 +300,12 @@ export default function QuizExercisePage() {
                   />
                 ))}
               </div>
+              
+              {feedback && (
+                <div className="mt-4 p-3 bg-blue-100 border border-blue-300 rounded-md text-blue-800">
+                  {feedback}
+                </div>
+              )}
             </div>
             
             {/* Navigation buttons */}
@@ -272,10 +320,20 @@ export default function QuizExercisePage() {
               
               <button
                 onClick={handleNextQuestion}
-                disabled={selectedOption === null}
+                disabled={selectedOption === null || isSubmitting}
                 className="px-8 py-3 bg-[#ffd699] rounded-md text-gray-800 font-medium hover:bg-[#ffc266] disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {currentQuestionIndex === totalQuestions - 1 ? 'Завершить викторину' : 'Следующий вопрос'}
+                {isSubmitting ? (
+                  <span className="flex items-center">
+                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-gray-800" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Проверка...
+                  </span>
+                ) : (
+                  currentQuestionIndex === totalQuestions - 1 ? 'Завершить викторину' : 'Следующий вопрос'
+                )}
               </button>
             </div>
           </div>
