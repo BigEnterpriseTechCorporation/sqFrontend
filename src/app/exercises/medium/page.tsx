@@ -9,9 +9,6 @@ import exerciseFetch from "@/hooks/content/exercise";
 import { Exercise, Question } from '@/types';
 import { API_URL } from '@/constants';
 import ReactMarkdown from 'react-markdown';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { materialDark } from 'react-syntax-highlighter/dist/cjs/styles/prism';
-import type { ComponentPropsWithoutRef } from 'react';
 import React from 'react';
 
 export default function MediumExercisePage() {

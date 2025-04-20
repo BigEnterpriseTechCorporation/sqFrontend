@@ -68,6 +68,7 @@ export default function UnitPage() {
         if (params.unitId) {
             fetchUnitAndExercises();
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     if (loading) {

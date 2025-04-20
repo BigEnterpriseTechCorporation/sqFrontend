@@ -56,10 +56,11 @@ export default function Units() {
         }
 
         fetchUnits()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const handleLoadMore = () => {
-        console.info(visibleUnits.length, UNITS_PER_PAGE)
+        console.info(visibleUnits, UNITS_PER_PAGE)
         setVisibleUnits((prev) => prev + UNITS_PER_PAGE)
     }
 

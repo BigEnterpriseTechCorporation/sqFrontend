@@ -35,7 +35,6 @@ export default function QuizExercisePage() {
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [isQuizCompleted, setIsQuizCompleted] = useState(false);
   const [score, setScore] = useState(0);
-  const [timeSpent, setTimeSpent] = useState(0);
   const [startTime] = useState<number>(Date.now());
   const [options, setOptions] = useState<QuizOption[]>([]);
   const [totalQuestions] = useState(1); // Changed from 4 to 1 to match actual question count
@@ -149,8 +148,7 @@ export default function QuizExercisePage() {
   useEffect(() => {
     if (isQuizCompleted) {
       const endTime = Date.now();
-      const minutes = Math.floor((endTime - startTime) / 60000);
-      setTimeSpent(minutes);
+      console.log(`Quiz completed in ${Math.floor((endTime - startTime) / 60000)} minutes`);
     }
   }, [isQuizCompleted, startTime]);
 
@@ -332,7 +330,7 @@ export default function QuizExercisePage() {
           <QuizCompletionCard
             score={score}
             totalQuestions={totalQuestions}
-            timeSpent={timeSpent}
+            onReturn={() => window.location.href = '/units'}
           />
         )}
       </div>
