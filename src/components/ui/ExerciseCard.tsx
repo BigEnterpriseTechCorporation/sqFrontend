@@ -2,7 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import { ExerciseCardProps } from '@/types/components';
 
-export default function ExerciseCard({ exercise }: ExerciseCardProps) {
+export default function ExerciseCard({ exercise, progress }: ExerciseCardProps) {
   // Map difficulty number to text
   const difficultyText = ["Easy", "Medium", "Hard", "Expert"][exercise.difficulty] || "Unknown";
   
@@ -26,26 +26,43 @@ export default function ExerciseCard({ exercise }: ExerciseCardProps) {
   const exerciseLink = links[exercise.type];
 
   return (
-    <div className="bg-bg2 rounded-5 overflow-hidden transition-shadow duration-300 shadow-orange">
+    <div className={`bg-bg2 rounded-5 overflow-hidden transition-shadow duration-300 ${progress?.isCompleted ? 'shadow-green-300' : 'shadow-orange'}`}>
+      {/* Completion marker */}
+      {progress?.isCompleted && (
+        <div className="bg-green-500 text-white text-xs font-bold py-1 px-3 text-center">
+          COMPLETED
+        </div>
+      )}
 
       {/* Card content */}
       <div className="p-6">
         <h3 className="text-xl font-bold mb-2 text-gray-800">{exercise.title}</h3>
         <p className="text-gray-700 mb-4 line-clamp-3">{exercise.description}</p>
         
-        {/* Difficulty badge */}
-        <div className="mb-4">
+        <div className="flex flex-wrap justify-between items-center mb-4">
+          {/* Difficulty badge */}
           <span className={`inline-block px-3 py-1 text-xs font-semibold rounded-full ${difficultyColor}`}>
             {difficultyText}
           </span>
+          
+          {/* Attempts badge, if any */}
+          {progress?.attempts > 0 && (
+            <span className="text-xs text-gray-600 ml-2">
+              Attempts: <span className="font-semibold">{progress.attempts}</span>
+            </span>
+          )}
         </div>
         
         {/* Action button */}
         <Link 
           href={exerciseLink}
-          className="inline-block bg-bg1 shadow-orange py-2 px-4 rounded-lg hover:bg-blue-200 transition-colors duration-200"
+          className={`inline-block py-2 px-4 rounded-lg transition-colors duration-200 ${
+            progress?.isCompleted 
+              ? 'bg-green-500 hover:bg-green-600 text-white' 
+              : 'bg-bg1 shadow-orange hover:bg-blue-200'
+          }`}
         >
-          Open Exercise
+          {progress?.isCompleted ? 'Review Exercise' : 'Open Exercise'}
         </Link>
       </div>
     </div>
