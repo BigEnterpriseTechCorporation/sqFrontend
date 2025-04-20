@@ -94,7 +94,7 @@ export function ExerciseEditor({
           onChange={onCodeChange}
           options={{
             minimap: { enabled: !isMobile },
-            fontSize: isMobile ? 16 : 14,
+            fontSize: isMobile ? 10 : 14,
             lineNumbers: 'on',
             roundedSelection: false,
             scrollBeyondLastLine: false,

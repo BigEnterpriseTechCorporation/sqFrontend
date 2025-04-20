@@ -41,7 +41,13 @@ export default function Units() {
                 }
                 
                 const response = await allUnits({ token })
-                setUnits(response)
+
+                const sortedUnits = [...response].sort((a, b) =>
+                    a.title.localeCompare(b.title)
+                )
+
+                // Show all units at once
+                setUnits(sortedUnits)
             } catch (err) {
                 setError(err instanceof Error ? err.message : 'Failed to fetch units')
             } finally {
@@ -50,7 +56,7 @@ export default function Units() {
         }
 
         fetchUnits()
-    }, [getToken, hasToken, router]);
+    }, []);
 
     const handleLoadMore = () => {
         console.info(visibleUnits.length, UNITS_PER_PAGE)
@@ -68,7 +74,7 @@ export default function Units() {
     return (
         <div className="flex flex-col min-h-screen">
             <Navigation />
-            <div className="flex-grow bg-bg1">
+            <div className="flex-grow bg-bg1 pb-32">
                 <UnitTitle title="Юниты" className={"text-8xl"}/>
                 <UnitsList 
                     visibleUnits={visibleUnits} 

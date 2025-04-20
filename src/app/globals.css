@@ -11,7 +11,7 @@
   }
 }
 
-@media screen and (max-width: 400px) and (min-width: 240px) {
+@media screen and (max-width: 450px) and (min-width: 240px) {
   :root{
     font-size: clamp(8px , 1vw, 16px);
   }
@@ -28,7 +28,7 @@
   --radius-5: 1.25rem;
   --breakpoint-xs: 240px;
   --breakpoint-sm: 320px;
-  --breakpoint-md: 400px;
+  --breakpoint-md: 450px;
   --breakpoint-lg: 600px;
   --breakpoint-xl: 700px;
   --breakpoint-2xl: 1000px;

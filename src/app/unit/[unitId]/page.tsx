@@ -68,7 +68,7 @@ export default function UnitPage() {
         if (params.unitId) {
             fetchUnitAndExercises();
         }
-    }, [params.unitId, getToken, hasToken]);
+    }, []);
 
     if (loading) {
         return <LoadingSpinner />;
