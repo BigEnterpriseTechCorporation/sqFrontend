@@ -21,9 +21,6 @@ export default function Units() {
     const [loading, setLoading] = useState(true)
     const { getToken, hasToken } = useToken()
 
-    // Number of units to load initially and on "Load more" click
-    const UNITS_PER_PAGE = 4
-
     useEffect(() => {
         const fetchUnits = async () => {
             try {
@@ -39,9 +36,15 @@ export default function Units() {
                 }
                 
                 const response = await allUnits({ token })
-                setUnits(response)
-                // Initially show only the first batch of units
-                setVisibleUnits(response.slice(0, UNITS_PER_PAGE))
+                
+                // Sort units by title alphabetically
+                const sortedUnits = [...response].sort((a, b) => 
+                    a.title.localeCompare(b.title)
+                )
+                
+                setUnits(sortedUnits)
+                // Show all units at once
+                setVisibleUnits(sortedUnits)
             } catch (err) {
                 setError(err instanceof Error ? err.message : 'Failed to fetch units')
             } finally {
@@ -52,9 +55,10 @@ export default function Units() {
         fetchUnits()
     }, [getToken, hasToken, router]);
 
+    // No need for load more function anymore
     const handleLoadMore = () => {
-        const nextUnits = units.slice(visibleUnits.length, visibleUnits.length + UNITS_PER_PAGE)
-        setVisibleUnits(prev => [...prev, ...nextUnits])
+        // This function is kept for compatibility with UnitsList component
+        // but it won't be called since all units are visible
     }
 
     if (loading) {
