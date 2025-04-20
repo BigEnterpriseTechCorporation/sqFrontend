@@ -68,7 +68,7 @@ export default function UnitPage() {
         if (params.unitId) {
             fetchUnitAndExercises();
         }
-    }, [params.unitId, hasToken, getToken]);
+    }, []);
 
     if (loading) {
         return <LoadingSpinner />;
@@ -83,25 +83,27 @@ export default function UnitPage() {
     }
 
     return (
-        <main className="bg-bg1">
+        <div className="flex flex-col min-h-screen">
             <Navigation/>
-            <UnitTitle title={unit.title}/>
+            <div className="flex-grow bg-bg1">
+                <UnitTitle title={unit.title}/>
 
-            <div className="max-w-5xl mx-auto px-4 py-10 mb-52 min-h-screen">
-                <UnitHeader 
-                    ownerName={unit.ownerName} 
-                    exerciseCount={unit.exerciseCount} 
-                />
-                
-                <UnitDescription 
-                    markdownContent={markdownContent}
-                    fallbackText={unit.description} 
-                />
-                
-                <ExercisesList exercises={unit.exercises} />
+                <div className="max-w-5xl mx-auto px-4 py-10 mb-10">
+                    <UnitHeader 
+                        ownerName={unit.ownerName} 
+                        exerciseCount={unit.exerciseCount} 
+                    />
+                    
+                    <UnitDescription 
+                        markdownContent={markdownContent}
+                        fallbackText={unit.description} 
+                    />
+                    
+                    <ExercisesList exercises={unit.exercises} />
+                </div>
             </div>
 
             <Footer/>
-        </main>
+        </div>
     );
 }

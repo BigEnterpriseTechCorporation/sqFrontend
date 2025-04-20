@@ -7,12 +7,14 @@ import HowItWorks from "@/components/Home/HowItWorks";
 
 export default function Home() {
   return (
-    <div>
+    <div className="flex flex-col min-h-screen">
       <Navigation/>
-      <Header/>
-      <AboutTrainer/>
-      <DifficultyLevels/>
-      <HowItWorks/>
+      <div className="flex-grow">
+        <Header/>
+        <AboutTrainer/>
+        <DifficultyLevels/>
+        <HowItWorks/>
+      </div>
       <Footer/>
     </div>
   ) 

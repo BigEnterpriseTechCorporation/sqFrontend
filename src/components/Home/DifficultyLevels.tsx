@@ -10,7 +10,7 @@ export default function DifficultyLevels() {
     <div className="bg-bg1 min-h-[400px] relative overflow-hidden">
       <div className="mx-auto px-4 pt-20 pb-48 flex flex-col items-center">
         <h2 className="text-4xl font-jura mb-16 font-bold text-center">Уровни сложности</h2>
-        <div className="w-fit grid grid-cols-4 gap-8">
+        <div className="w-fit grid md:grid-cols-2 lg:grid-cols-4 gap-8">
           <div className="bg-bg2 rounded-2xl p-6 px-6 flex flex-col items-center shadow-orange">
             <div className="w-60 h-48 rounded-2xl overflow-hidden mb-6">
               <Image 

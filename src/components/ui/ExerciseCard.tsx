@@ -26,7 +26,7 @@ export default function ExerciseCard({ exercise, progress }: ExerciseCardProps) 
   const exerciseLink = links[exercise.type];
 
   return (
-    <div className={`bg-bg2 rounded-5 overflow-hidden transition-shadow duration-300 ${progress?.isCompleted ? 'shadow-green-300' : 'shadow-orange'}`}>
+    <div className={`bg-bg2 rounded-5 overflow-hidden transition-shadow duration-300 grid grid-rows-[fit-content_auto] ${progress?.isCompleted ? 'shadow-green-300' : 'shadow-orange'}`}>
       {/* Completion marker */}
       {progress?.isCompleted && (
         <div className="bg-green-500 text-white text-xs font-bold py-1 px-3 text-center">
@@ -35,23 +35,23 @@ export default function ExerciseCard({ exercise, progress }: ExerciseCardProps) 
       )}
       
       {/* Card content */}
-      <div className="p-6 flex flex-col justify-between h-full">
-        <div>
+      <div className="px-6 pb-6 pt-4 flex flex-col justify-between">
+        <div className={"mb-8"}>
           <h3 className="text-xl font-bold mb-2 text-gray-800">{exercise.title}</h3>
           {/* Difficulty badge */}
           <div className={`w-fit px-3 py-1 text-xs font-semibold rounded-full mb-3 ${difficultyColor}`}>
             {difficultyText}
           </div>
-          <p className="text-gray-700 mb-4 line-clamp-3">{exercise.description}</p>
+          <p className="text-gray-700 line-clamp-3">{exercise.description}</p>
         </div>
         
         {/* Action button */}
         <Link 
           href={exerciseLink}
-          className={`inline-block py-2 px-4 rounded-lg transition-colors duration-200 w-fit ${
+          className={`py-2 px-4 rounded-lg transition-colors duration-200 w-fit shadow-orange ${
             progress?.isCompleted 
               ? 'bg-green-500 hover:bg-green-600 text-white' 
-              : 'bg-bg1 shadow-orange hover:bg-blue-200'
+              : 'bg-bg1 hover:bg-blue-200'
           }`}
         >
           {progress?.isCompleted ? 'Review Exercise' : 'Open Exercise'}

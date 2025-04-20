@@ -262,7 +262,7 @@ export default function QuizExercisePage() {
       <Navigation />
       
       {/* Header with wavy border */}
-      <UnitTitle title={`${exercise?.type === 1}`}/>
+      <UnitTitle title={`${exercise?.title}`}/>
 
       
       {/* Main content */}

@@ -50,7 +50,7 @@ export default function Units() {
         }
 
         fetchUnits()
-    }, [getToken, hasToken, router]);
+    }, []);
 
     const handleLoadMore = () => {
         const nextUnits = units.slice(visibleUnits.length, visibleUnits.length + UNITS_PER_PAGE)
@@ -66,15 +66,17 @@ export default function Units() {
     }
 
     return (
-        <main className="min-h-screen bg-bg1">
+        <div className="flex flex-col min-h-screen">
             <Navigation />
-            <UnitTitle title="Юниты" className={"text-8xl"}/>
-            <UnitsList 
-                visibleUnits={visibleUnits} 
-                units={units} 
-                onLoadMore={handleLoadMore}
-            />
+            <div className="flex-grow bg-bg1">
+                <UnitTitle title="Юниты" className={"text-8xl"}/>
+                <UnitsList 
+                    visibleUnits={visibleUnits} 
+                    units={units} 
+                    onLoadMore={handleLoadMore}
+                />
+            </div>
             <Footer/>
-        </main>
+        </div>
     )
 }
