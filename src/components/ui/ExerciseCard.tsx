@@ -1,10 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { Exercise } from '@/types';
-
-interface ExerciseCardProps {
-  exercise: Exercise;
-}
+import { ExerciseCardProps } from '@/types/components';
 
 export default function ExerciseCard({ exercise }: ExerciseCardProps) {
   // Map difficulty number to text
@@ -17,6 +13,17 @@ export default function ExerciseCard({ exercise }: ExerciseCardProps) {
     2: 'bg-orange-100 text-orange-800', // Hard
     3: 'bg-red-100 text-red-800',     // Expert
   }[exercise.difficulty] || 'bg-gray-100 text-gray-800';
+
+  // Determine link based on difficulty level
+  const links = {
+    0:`/exercises/quiz?id=${exercise.id}`,
+    1:`/exercises/medium?id=${exercise.id}`,
+    2:`/exercises/${exercise.id}`,
+    3:`/exercises/${exercise.id}`,
+    4:`/exercises/${exercise.id}`,
+  }
+
+  const exerciseLink = links[exercise.type];
 
   return (
     <div className="bg-bg2 rounded-5 overflow-hidden transition-shadow duration-300 shadow-orange">
@@ -35,7 +42,7 @@ export default function ExerciseCard({ exercise }: ExerciseCardProps) {
         
         {/* Action button */}
         <Link 
-          href={`/exercises/${exercise.id}`}
+          href={exerciseLink}
           className="inline-block bg-bg1 shadow-orange py-2 px-4 rounded-lg hover:bg-blue-200 transition-colors duration-200"
         >
           Open Exercise

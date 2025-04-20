@@ -45,6 +45,15 @@ export interface Exercise {
   queryParts: string
   position?: number
   unit?: Unit
+  questions?: Question[]
+}
+
+export interface Question {
+  id: string
+  text: string
+  answers: string[]
+  userAnswer?: string
+  solutionQuery?: string
 }
 
 export interface UnitWithExercises extends Unit {

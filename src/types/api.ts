@@ -41,4 +41,41 @@ export interface Stats {
   totalUnits: number
   totalExercises: number
   completedExercises: number
+}
+
+// Solution submission interface
+export interface SolutionSubmissionResponse {
+  isCorrect: boolean
+  attemptCount: number
+  exerciseId: string
+  userId: string
+  feedback: string | null
+}
+
+// Progress tracking interfaces
+export interface UserProgressStats {
+  userId: string;
+  completedExercises: number;
+  totalExercises: number;
+  overallProgress: number; // percentage
+  recentActivity?: {
+    date: string;
+    action: string;
+  }[];
+}
+
+export interface ExerciseProgress {
+  exerciseId: string
+  isCompleted: boolean
+  attempts: number
+  lastAttemptDate?: string
+  bestScore?: number
+}
+
+export interface UnitProgress {
+  unitId: string
+  totalExercises: number
+  completedExercises: number
+  completionPercentage: number
+  exercises: ExerciseProgress[]
 } 

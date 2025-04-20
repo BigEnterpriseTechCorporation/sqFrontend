@@ -40,19 +40,19 @@ export default function Navigation(){
             </Link>
             <div className="flex items-center gap-8 text-white text-xl">
                 <Link className={"underline-parent"} href={"/"} >Главная</Link>
-                <Link className={"underline-parent"} href={"/units"} >Units</Link>
-                
-                {isLoggedIn && (
-                    <Link className={"underline-parent"} href={"/profile"} >Profile</Link>
-                )}
+                <Link className={"underline-parent"} href={"/units"} >Юниты</Link>
                 
                 {isAdmin && (
-                    <Link className={"underline-parent"} href={"/admin"} >Admin Panel</Link>
+                    <Link className={"underline-parent"} href={"/admin"} >Панель админа</Link>
+                )}
+
+                {isLoggedIn && (
+                    <Link className={"px-16 py-3.5 border-white border-2"} href={"/profile"} >Профиль</Link>
                 )}
                 
                 {!isLoggedIn && (
                     <>
-                        <Link className={"underline-parent"} href={"/auth"} >auth</Link>
+                        <Link className={"underline-parent"} href={"/auth"} >Регистрация</Link>
                         <Link href={"/login"} className="bg-bg1 hover:bg-bg2 duration-300 ease-in-out text-[#202020] px-10 py-1.5 rounded-md font-medium">Вход</Link>
                     </>
                 )}
