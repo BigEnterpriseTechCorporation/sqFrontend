@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Split from 'react-split';
 import Navigation from "@/components/layout/Navigation";
@@ -46,6 +46,9 @@ export default function ExercisesPage() {
   // Controls which tab is displayed in the right panel
   const [activeTab, setActiveTab] = useState<'description' | 'results' | 'tables' | 'diagram'>('description');
   
+  // Track API connection errors
+  const [connectionError, setConnectionError] = useState<string | null>(null);
+  
   /**
    * Custom hook that fetches exercise data
    * Provides exercise details, progress tracking, and user statistics
@@ -85,6 +88,34 @@ export default function ExercisesPage() {
     queryResult, 
     setActiveTab
   );
+
+  /**
+   * Handle API errors globally
+   */
+  useEffect(() => {
+    const handleConnectionError = (event: ErrorEvent) => {
+      if (event.error instanceof TypeError && event.error.message.includes('Failed to fetch')) {
+        setConnectionError('Connection to server failed. Please check your internet connection or try again later.');
+      }
+    };
+
+    window.addEventListener('error', handleConnectionError);
+    
+    return () => {
+      window.removeEventListener('error', handleConnectionError);
+    };
+  }, []);
+
+  /**
+   * Clear connection error when user interacts with the page
+   */
+  useEffect(() => {
+    if (connectionError) {
+      const clearError = () => setConnectionError(null);
+      window.addEventListener('click', clearError, { once: true });
+      return () => window.removeEventListener('click', clearError);
+    }
+  }, [connectionError]);
 
   /**
    * Handles code changes in the editor
@@ -128,27 +159,37 @@ export default function ExercisesPage() {
   };
 
   return (
-    <main className="h-screen flex flex-col bg-[#1E1E1E]">
+    <main className="h-screen flex flex-col overflow-hidden bg-[#1E1E1E]">
       <Navigation/>
+      {/* Connection error message */}
+      {connectionError && (
+        <div className="bg-red-600 text-white p-2 text-center">
+          {connectionError}
+        </div>
+      )}
       {/* Split pane layout with resizable panels */}
-      <Split direction={"vertical"}
-          className="flex-1 flex md:flex-row flex-col bg-[#444444] "
+      <Split
+          className="flex-1 flex overflow-hidden"
           sizes={[50, 50]}
           minSize={200}
           gutterSize={4}
           snapOffset={0}
+          direction="horizontal"
+          style={{ display: 'flex', height: 'calc(100vh - 64px)' }}
       >
         {/* Left side - SQL Editor */}
-        <ExerciseEditor 
-          code={code}
-          onCodeChange={handleEditorChange}
-          onExecute={handleExecuteQuery}
-          onSubmit={handleSubmitSolution}
-          isSubmitting={isSubmitting}
-        />
+        <div className="h-full overflow-hidden bg-[#444444]">
+          <ExerciseEditor 
+            code={code}
+            onCodeChange={handleEditorChange}
+            onExecute={handleExecuteQuery}
+            onSubmit={handleSubmitSolution}
+            isSubmitting={isSubmitting}
+          />
+        </div>
 
         {/* Right side - Tabbed interface for description/results/tables */}
-        <div className="h-full bg-[#1E1E1E] p-4 overflow-auto">
+        <div className="h-full bg-[#1E1E1E] p-4 overflow-auto flex flex-col">
           {/* Tab navigation */}
           <div className="flex border-b border-[#444444] mb-4">
             <button
@@ -194,25 +235,27 @@ export default function ExercisesPage() {
           </div>
 
           {/* Tab content based on activeTab state */}
-          {activeTab === 'description' ? (
-            <ExerciseDescription 
-              exercise={exercise}
-              exerciseProgress={exerciseProgress}
-              userStats={userStats}
-              loadingProgress={loadingProgress}
-              attemptCount={attemptCount}
-              onShowSolution={getExampleSolution}
-            />
-          ) : activeTab === 'results' ? (
-            <ResultsPanel 
-              queryResult={queryResult}
-              solutionResult={solutionResult}
-            />
-          ) : activeTab === 'diagram' ? (
-            <DiagramView tables={tables} />
-          ) : (
-            <TablesView tables={tables} />
-          )}
+          <div className="flex-1 overflow-auto">
+            {activeTab === 'description' ? (
+              <ExerciseDescription 
+                exercise={exercise}
+                exerciseProgress={exerciseProgress}
+                userStats={userStats}
+                loadingProgress={loadingProgress}
+                attemptCount={attemptCount}
+                onShowSolution={getExampleSolution}
+              />
+            ) : activeTab === 'results' ? (
+              <ResultsPanel 
+                queryResult={queryResult}
+                solutionResult={solutionResult}
+              />
+            ) : activeTab === 'diagram' ? (
+              <DiagramView tables={tables} />
+            ) : (
+              <TablesView tables={tables} />
+            )}
+          </div>
         </div>
       </Split>
     </main>

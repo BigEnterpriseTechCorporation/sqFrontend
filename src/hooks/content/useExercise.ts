@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Exercise } from '@/types';
 import { ExerciseProgress } from '@/types/api';
 import exerciseFetch from './exercise';
@@ -35,8 +35,12 @@ export function useExercise(id: string) {
   // State for the user's progress on this exercise
   const [exerciseProgress, setExerciseProgress] = useState<ExerciseProgress | null>(null);
   
-  // State for tracking data loading (currently static)
-  const [loadingProgress] = useState(false);
+  // State for tracking data loading
+  const [loadingProgress, setLoadingProgress] = useState(false);
+
+  // Add request tracking to prevent duplicate requests
+  const requestInProgress = useRef(false);
+  const lastFetchedId = useRef<string | null>(null);
 
   // Use the token hook
   const { getToken, hasToken } = useToken();
@@ -58,6 +62,14 @@ export function useExercise(id: string) {
    */
   useEffect(() => {
     const fetchExercise = async () => {
+      // Prevent duplicate requests for the same ID
+      if (requestInProgress.current || lastFetchedId.current === id) {
+        return;
+      }
+
+      requestInProgress.current = true;
+      setLoadingProgress(true);
+      
       try {
         // Get authentication token using the hook
         if (!hasToken()) {
@@ -80,11 +92,15 @@ export function useExercise(id: string) {
         // Fetch exercise data from API
         const response = await exerciseFetch({ token, id });
         setExercise(response);
+        lastFetchedId.current = id;
         
         // In the future, we might want to fetch progress here as well
         
       } catch (err) {
         console.error(err instanceof Error ? err.message : 'Failed to fetch exercise');
+      } finally {
+        setLoadingProgress(false);
+        requestInProgress.current = false;
       }
     };
 
@@ -92,6 +108,11 @@ export function useExercise(id: string) {
     if (id) {
       fetchExercise();
     }
+    
+    // Cleanup function
+    return () => {
+      // Clean up any potential pending operations
+    };
   }, [id, hasToken, getToken]);
 
   // Return all relevant state and functions

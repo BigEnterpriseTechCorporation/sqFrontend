@@ -3,6 +3,8 @@
  */
 
 const API_BASE_URL = 'https://rpi.tail707b9c.ts.net/api/v1';
+const MAX_RETRIES = 2;
+const RETRY_DELAY = 1000; // ms
 
 export enum HttpMethod {
   GET = 'GET',
@@ -18,7 +20,13 @@ interface ApiOptions<T = Record<string, unknown>> {
   body?: T;
 }
 
-export async function apiRequest<R, T = Record<string, unknown>>({ method, endpoint, token, body }: ApiOptions<T>): Promise<R> {
+// Helper function to delay execution
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+export async function apiRequest<R, T = Record<string, unknown>>(
+  { method, endpoint, token, body }: ApiOptions<T>,
+  retries = MAX_RETRIES
+): Promise<R> {
   try {
     const headers: HeadersInit = {
       'Authorization': `Bearer ${token}`,
@@ -29,7 +37,9 @@ export async function apiRequest<R, T = Record<string, unknown>>({ method, endpo
     const config: RequestInit = {
       method,
       headers,
-      body: body ? JSON.stringify(body) : undefined
+      body: body ? JSON.stringify(body) : undefined,
+      // Add cache control for GET requests
+      cache: method === HttpMethod.GET ? 'default' : 'no-store'
     };
 
     const response = await fetch(`${API_BASE_URL}/${endpoint}`, config);
@@ -46,6 +56,13 @@ export async function apiRequest<R, T = Record<string, unknown>>({ method, endpo
 
     return await response.json() as R;
   } catch (error) {
+    // Handle network errors or server errors with retries
+    if (retries > 0 && (error instanceof TypeError || error instanceof Error)) {
+      console.warn(`API request failed (${endpoint}). Retrying... (${retries} attempts left)`);
+      await delay(RETRY_DELAY);
+      return apiRequest({ method, endpoint, token, body }, retries - 1);
+    }
+    
     console.error(`API Error (${endpoint}):`, error);
     throw error;
   }
