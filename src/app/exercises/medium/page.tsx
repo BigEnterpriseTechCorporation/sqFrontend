@@ -168,7 +168,7 @@ export default function MediumExercisePage() {
       if (!isCorrect) {
         // If incorrect, construct user's attempted query
         userQuery = currentQuestionData.text;
-        userInputs.forEach((answer, _) => {
+        userInputs.forEach((answer) => {
           userQuery = userQuery.replace('______', answer);
         });
       }
