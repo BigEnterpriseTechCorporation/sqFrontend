@@ -1,4 +1,5 @@
 import Editor from '@monaco-editor/react';
+import { useEffect, useState } from 'react';
 
 /**
  * Props for the ExerciseEditor component
@@ -30,6 +31,7 @@ interface ExerciseEditorProps {
  * - Execute button to run queries
  * - Submit button to check solutions
  * - Visual feedback during submission
+ * - Responsive design for mobile devices
  */
 export function ExerciseEditor({ 
   code, 
@@ -38,18 +40,34 @@ export function ExerciseEditor({
   onSubmit, 
   isSubmitting 
 }: ExerciseEditorProps) {
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Detect mobile devices
+  useEffect(() => {
+    const checkIsMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkIsMobile();
+    window.addEventListener('resize', checkIsMobile);
+    
+    return () => {
+      window.removeEventListener('resize', checkIsMobile);
+    };
+  }, []);
+
   return (
     <div className="relative h-full overflow-hidden">
-      {/* Action buttons positioned in top-right corner */}
-      <div className="absolute top-2 right-2 z-10 flex gap-1">
+      {/* Action buttons - responsive layout for mobile */}
+      <div className={`absolute ${isMobile ? 'top-0 left-0 right-0 p-2 flex justify-end bg-gray-800 bg-opacity-80' : 'top-2 right-2'} z-10 flex gap-2`}>
         {/* Cell identifier (like in spreadsheets) */}
-        <div className="flex items-center justify-center h-6 w-6 bg-green-600 text-white text-xs font-mono rounded">
+        {/* <div className="flex items-center justify-center h-6 w-6 bg-green-600 text-white text-xs font-mono rounded">
           A1
-        </div>
+        </div> */}
         
         {/* Execute button - runs the query without submitting */}
         <button
-          className="px-2 h-6 bg-green-600 text-white text-sm rounded hover:bg-green-700 mr-1"
+          className={`px-3 ${isMobile ? 'h-10' : 'h-6'} bg-green-600 text-white ${isMobile ? 'text-base' : 'text-sm'} rounded hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500`}
           onClick={onExecute}
         >
           Execute
@@ -57,7 +75,7 @@ export function ExerciseEditor({
         
         {/* Submit button - checks if the solution is correct */}
         <button
-          className="px-2 h-6 bg-blue-600 text-white text-sm rounded hover:bg-blue-700"
+          className={`px-3 ${isMobile ? 'h-10' : 'h-6'} bg-blue-600 text-white ${isMobile ? 'text-base' : 'text-sm'} rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500`}
           onClick={onSubmit}
           disabled={isSubmitting}
         >
@@ -66,25 +84,33 @@ export function ExerciseEditor({
       </div>
 
       {/* Monaco Editor for SQL */}
-      <Editor
-        height="100%"
-        defaultLanguage="sql"
-        defaultValue={code}
-        value={code}
-        theme="vs-dark"
-        onChange={onCodeChange}
-        options={{
-          minimap: { enabled: false },
-          fontSize: 14,
-          lineNumbers: 'on',
-          roundedSelection: false,
-          scrollBeyondLastLine: false,
-          readOnly: false,
-          automaticLayout: true,
-          padding: { top: 8 },
-          lineHeight: 20,
-        }}
-      />
+      <div className={`${isMobile ? 'pt-14' : ''} h-full`}>
+        <Editor
+          height="100%"
+          defaultLanguage="sql"
+          defaultValue={code}
+          value={code}
+          theme="vs-dark"
+          onChange={onCodeChange}
+          options={{
+            minimap: { enabled: !isMobile },
+            fontSize: isMobile ? 16 : 14,
+            lineNumbers: 'on',
+            roundedSelection: false,
+            scrollBeyondLastLine: false,
+            readOnly: false,
+            automaticLayout: true,
+            padding: { top: 8 },
+            lineHeight: isMobile ? 24 : 20,
+            wordWrap: isMobile ? 'on' : 'off',
+            scrollbar: {
+              vertical: 'visible',
+              horizontalSliderSize: isMobile ? 10 : 7,
+              verticalSliderSize: isMobile ? 10 : 7
+            }
+          }}
+        />
+      </div>
     </div>
   );
 } 

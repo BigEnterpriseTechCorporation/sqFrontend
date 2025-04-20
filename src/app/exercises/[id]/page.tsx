@@ -49,6 +49,32 @@ export default function ExercisesPage() {
   // Track API connection errors
   const [connectionError, setConnectionError] = useState<string | null>(null);
   
+  // Track screen size for responsive layout
+  const [isMobile, setIsMobile] = useState(false);
+  
+  // Define type for split sizes
+  interface SplitSizesState {
+    mobile: number[];
+    desktop: number[];
+  }
+  
+  // Store split sizes for persistence
+  const [splitSizes, setSplitSizes] = useState<SplitSizesState>(() => {
+    // Try to load saved sizes from localStorage
+    if (typeof window !== 'undefined') {
+      const savedSizes = localStorage.getItem('splitSizes');
+      if (savedSizes) {
+        try {
+          return JSON.parse(savedSizes);
+        } catch (e) {
+          // Fallback to default if parsing fails
+          return { mobile: [50, 50], desktop: [50, 50] };
+        }
+      }
+    }
+    return { mobile: [50, 50], desktop: [50, 50] };
+  });
+  
   /**
    * Custom hook that fetches exercise data
    * Provides exercise details, progress tracking, and user statistics
@@ -103,6 +129,25 @@ export default function ExercisesPage() {
     
     return () => {
       window.removeEventListener('error', handleConnectionError);
+    };
+  }, []);
+
+  /**
+   * Detect mobile screens and handle resize events
+   */
+  useEffect(() => {
+    const checkIfMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    // Check on initial load
+    checkIfMobile();
+    
+    // Add resize listener
+    window.addEventListener('resize', checkIfMobile);
+    
+    return () => {
+      window.removeEventListener('resize', checkIfMobile);
     };
   }, []);
 
@@ -168,96 +213,205 @@ export default function ExercisesPage() {
         </div>
       )}
       {/* Split pane layout with resizable panels */}
-      <Split
-          className="flex-1 flex overflow-hidden"
-          sizes={[50, 50]}
-          minSize={200}
-          gutterSize={4}
-          snapOffset={0}
-          direction="horizontal"
-          style={{ display: 'flex', height: 'calc(100vh - 64px)' }}
-      >
-        {/* Left side - SQL Editor */}
-        <div className="h-full overflow-hidden bg-[#444444]">
-          <ExerciseEditor 
-            code={code}
-            onCodeChange={handleEditorChange}
-            onExecute={handleExecuteQuery}
-            onSubmit={handleSubmitSolution}
-            isSubmitting={isSubmitting}
-          />
-        </div>
-
-        {/* Right side - Tabbed interface for description/results/tables */}
-        <div className="h-full bg-[#1E1E1E] p-4 overflow-auto flex flex-col">
-          {/* Tab navigation */}
-          <div className="flex border-b border-[#444444] mb-4">
-            <button
-                className={`px-4 py-2 text-sm font-medium ${
-                    activeTab === 'description'
-                        ? 'text-white border-b-2 border-green-600'
-                        : 'text-gray-400 hover:text-white'
-                }`}
-                onClick={() => setActiveTab('description')}
-            >
-              Description
-            </button>
-            <button
-                className={`px-4 py-2 text-sm font-medium ${
-                    activeTab === 'results'
-                        ? 'text-white border-b-2 border-green-600'
-                        : 'text-gray-400 hover:text-white'
-                }`}
-                onClick={() => setActiveTab('results')}
-            >
-              Results
-            </button>
-            <button
-                className={`px-4 py-2 text-sm font-medium ${
-                    activeTab === 'tables'
-                        ? 'text-white border-b-2 border-green-600'
-                        : 'text-gray-400 hover:text-white'
-                }`}
-                onClick={() => setActiveTab('tables')}
-            >
-              Tables
-            </button>
-            <button
-                className={`px-4 py-2 text-sm font-medium ${
-                    activeTab === 'diagram'
-                        ? 'text-white border-b-2 border-green-600'
-                        : 'text-gray-400 hover:text-white'
-                }`}
-                onClick={() => setActiveTab('diagram')}
-            >
-              Diagram
-            </button>
-          </div>
-
-          {/* Tab content based on activeTab state */}
-          <div className="flex-1 overflow-auto">
-            {activeTab === 'description' ? (
-              <ExerciseDescription 
-                exercise={exercise}
-                exerciseProgress={exerciseProgress}
-                userStats={userStats}
-                loadingProgress={loadingProgress}
-                attemptCount={attemptCount}
-                onShowSolution={getExampleSolution}
+      <div className="flex-1 flex overflow-hidden">
+        {isMobile ? (
+          // Mobile layout - Stack panels vertically with fixed heights
+          <div className="w-full h-full flex flex-col overflow-hidden">
+            {/* Top panel - SQL Editor (fixed height on mobile) */}
+            <div className="w-full" style={{ height: '40%' }}>
+              <ExerciseEditor 
+                code={code}
+                onCodeChange={handleEditorChange}
+                onExecute={handleExecuteQuery}
+                onSubmit={handleSubmitSolution}
+                isSubmitting={isSubmitting}
               />
-            ) : activeTab === 'results' ? (
-              <ResultsPanel 
-                queryResult={queryResult}
-                solutionResult={solutionResult}
-              />
-            ) : activeTab === 'diagram' ? (
-              <DiagramView tables={tables} />
-            ) : (
-              <TablesView tables={tables} />
-            )}
+            </div>
+            
+            {/* Bottom panel - Tabbed content (fixed height on mobile) */}
+            <div className="w-full bg-[#1E1E1E] p-2 overflow-auto" style={{ height: '60%' }}>
+              {/* Tab navigation */}
+              <div className="flex border-b border-[#444444] mb-2 overflow-x-auto">
+                <button
+                    className={`px-2 py-1 text-xs font-medium ${
+                        activeTab === 'description'
+                            ? 'text-white border-b-2 border-green-600'
+                            : 'text-gray-400 hover:text-white'
+                    }`}
+                    onClick={() => setActiveTab('description')}
+                >
+                  Description
+                </button>
+                <button
+                    className={`px-2 py-1 text-xs font-medium ${
+                        activeTab === 'results'
+                            ? 'text-white border-b-2 border-green-600'
+                            : 'text-gray-400 hover:text-white'
+                    }`}
+                    onClick={() => setActiveTab('results')}
+                >
+                  Results
+                </button>
+                <button
+                    className={`px-2 py-1 text-xs font-medium ${
+                        activeTab === 'tables'
+                            ? 'text-white border-b-2 border-green-600'
+                            : 'text-gray-400 hover:text-white'
+                    }`}
+                    onClick={() => setActiveTab('tables')}
+                >
+                  Tables
+                </button>
+                <button
+                    className={`px-2 py-1 text-xs font-medium ${
+                        activeTab === 'diagram'
+                            ? 'text-white border-b-2 border-green-600'
+                            : 'text-gray-400 hover:text-white'
+                    }`}
+                    onClick={() => setActiveTab('diagram')}
+                >
+                  Diagram
+                </button>
+              </div>
+
+              {/* Tab content based on activeTab state */}
+              <div className="h-full overflow-auto">
+                {activeTab === 'description' ? (
+                  <ExerciseDescription 
+                    exercise={exercise}
+                    exerciseProgress={exerciseProgress}
+                    userStats={userStats}
+                    loadingProgress={loadingProgress}
+                    attemptCount={attemptCount}
+                    onShowSolution={getExampleSolution}
+                  />
+                ) : activeTab === 'results' ? (
+                  <ResultsPanel 
+                    queryResult={queryResult}
+                    solutionResult={solutionResult}
+                  />
+                ) : activeTab === 'diagram' ? (
+                  <DiagramView tables={tables} />
+                ) : (
+                  <TablesView tables={tables} />
+                )}
+              </div>
+            </div>
           </div>
-        </div>
-      </Split>
+        ) : (
+          // Desktop layout - Use react-split for horizontal layout
+          <Split
+            className="flex-1 flex overflow-hidden"
+            sizes={splitSizes.desktop}
+            minSize={200}
+            gutterSize={4}
+            direction="horizontal"
+            onDragEnd={(newSizes) => {
+              setSplitSizes((prev) => ({ ...prev, desktop: newSizes }));
+              localStorage.setItem('splitSizes', JSON.stringify({ ...splitSizes, desktop: newSizes }));
+            }}
+            style={{ height: 'calc(100vh - 64px)' }}
+          >
+            {/* Left side - SQL Editor */}
+            <div className="h-full overflow-hidden bg-[#444444]">
+              <ExerciseEditor 
+                code={code}
+                onCodeChange={handleEditorChange}
+                onExecute={handleExecuteQuery}
+                onSubmit={handleSubmitSolution}
+                isSubmitting={isSubmitting}
+              />
+            </div>
+
+            {/* Right side - Tabbed interface for description/results/tables */}
+            <div className="h-full bg-[#1E1E1E] p-4 overflow-auto flex flex-col">
+              {/* Tab navigation */}
+              <div className="flex border-b border-[#444444] mb-4 overflow-x-auto">
+                <button
+                    className={`px-4 py-2 text-sm font-medium ${
+                        activeTab === 'description'
+                            ? 'text-white border-b-2 border-green-600'
+                            : 'text-gray-400 hover:text-white'
+                    }`}
+                    onClick={() => setActiveTab('description')}
+                >
+                  Description
+                </button>
+                <button
+                    className={`px-4 py-2 text-sm font-medium ${
+                        activeTab === 'results'
+                            ? 'text-white border-b-2 border-green-600'
+                            : 'text-gray-400 hover:text-white'
+                    }`}
+                    onClick={() => setActiveTab('results')}
+                >
+                  Results
+                </button>
+                <button
+                    className={`px-4 py-2 text-sm font-medium ${
+                        activeTab === 'tables'
+                            ? 'text-white border-b-2 border-green-600'
+                            : 'text-gray-400 hover:text-white'
+                    }`}
+                    onClick={() => setActiveTab('tables')}
+                >
+                  Tables
+                </button>
+                <button
+                    className={`px-4 py-2 text-sm font-medium ${
+                        activeTab === 'diagram'
+                            ? 'text-white border-b-2 border-green-600'
+                            : 'text-gray-400 hover:text-white'
+                    }`}
+                    onClick={() => setActiveTab('diagram')}
+                >
+                  Diagram
+                </button>
+              </div>
+
+              {/* Tab content based on activeTab state */}
+              <div className="flex-1 overflow-auto">
+                {activeTab === 'description' ? (
+                  <ExerciseDescription 
+                    exercise={exercise}
+                    exerciseProgress={exerciseProgress}
+                    userStats={userStats}
+                    loadingProgress={loadingProgress}
+                    attemptCount={attemptCount}
+                    onShowSolution={getExampleSolution}
+                  />
+                ) : activeTab === 'results' ? (
+                  <ResultsPanel 
+                    queryResult={queryResult}
+                    solutionResult={solutionResult}
+                  />
+                ) : activeTab === 'diagram' ? (
+                  <DiagramView tables={tables} />
+                ) : (
+                  <TablesView tables={tables} />
+                )}
+              </div>
+            </div>
+          </Split>
+        )}
+      </div>
+      
+      {/* Add custom styles for touch-friendly gutters */}
+      <style jsx global>{`
+        .gutter {
+          background-color: #333;
+          transition: background-color 0.2s;
+        }
+        .gutter:hover {
+          background-color: #555;
+        }
+        .gutter.gutter-horizontal {
+          cursor: col-resize;
+        }
+        .gutter.gutter-vertical {
+          cursor: row-resize;
+        }
+      `}</style>
     </main>
   );
 }
