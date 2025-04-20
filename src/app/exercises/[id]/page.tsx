@@ -131,8 +131,8 @@ export default function ExercisesPage() {
     <main className="h-screen flex flex-col bg-[#1E1E1E]">
       <Navigation/>
       {/* Split pane layout with resizable panels */}
-      <Split
-          className="flex-1 flex bg-[#444444] "
+      <Split direction={"vertical"}
+          className="flex-1 flex md:flex-row flex-col bg-[#444444] "
           sizes={[50, 50]}
           minSize={200}
           gutterSize={4}

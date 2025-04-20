@@ -30,13 +30,13 @@ return (
                     {/* Logo and description */}
                     <div className="flex flex-col md:flex-row justify-between">
                         <div className="mb-8 md:mb-0">
-                            <div className={"flex flex-col gap-4 mb-6"}>
+                            <div className={"flex flex-col md:gap-4 gap-16 mb-6"}>
                                 <div className="flex items-center ">
                                     <Logo className="w-10 h-10 mr-3" />
                                     <span className="text-4xl font-jura">super query</span>
                                 </div>
 
-                                    <nav className="flex gap-10 font-normal">
+                                    <nav className="flex md:flex-row flex-col gap-10 font-normal">
                                         <Link className="hover:text-gray-300 text-3xl" href="/">Главная</Link>
                                         <Link className="hover:text-gray-300 text-3xl" href="/units">Юниты</Link>
                                         <Link className="hover:text-gray-300 text-3xl" href="/exercises">Задания</Link>

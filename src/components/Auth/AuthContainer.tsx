@@ -11,7 +11,7 @@ interface AuthContainerProps {
 export default function AuthContainer({ activeTab, children }: AuthContainerProps) {
   return (
     <main className="h-screen bg-bg1 flex items-center justify-center">
-      <div className="max-w-md w-full p-8 mx-auto bg-bg2 rounded-5">
+      <div className="max-w-md w-full p-8 mx-auto lg:bg-bg2 rounded-5">
         {/* Logo */}
         <div className="flex justify-center mb-8">
           <div className="flex items-center">

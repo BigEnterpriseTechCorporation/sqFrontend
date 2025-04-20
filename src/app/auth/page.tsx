@@ -64,10 +64,10 @@ export default function Auth() {
     }
 
     return (
-        <main className="h-screen bg-bg1 px-40 py-16 grid grid-cols-5 items-center">
+        <main className="h-screen bg-bg1 md:px-40 px-10 py-16 grid grid-cols-5 items-center">
             {/* Left Column */}
 
-            <div className="bg-bg2 col-span-2 rounded-5 self-stretch px-12 grid grid-rows-[min-content_auto] w-full">
+            <div className="bg-bg2 col-span-2 rounded-5 self-stretch px-12 lg:grid hidden grid-rows-[min-content_auto] w-full">
                     <div>
                         <h1 className="text-5xl font-bold mb-6 text-center pt-16">Раскрой силу данных</h1>
                         <p className="text-lg mb-12 text-center">
@@ -87,7 +87,7 @@ export default function Auth() {
 
             
             {/* Right Column */}
-            <div className="p-16 flex justify-center items-center self-stretch h-full col-span-3">
+            <div className="lg:p-16 flex justify-center items-center self-stretch h-full lg:col-span-3 col-span-5">
                 <div className="w-[min(50rem,100%)]">
                     <div className="flex mb-8">
                         <div className="flex items-center">

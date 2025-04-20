@@ -9,10 +9,10 @@ interface UnitsListProps {
 
 export default function UnitsList({ visibleUnits, units, onLoadMore }: UnitsListProps) {
   return (
-    <div className="max-w-5xl mx-auto px-4 pb-10 pt-24 relative">
+    <div className="lg:max-w-5xl mx-auto px-20 pb-10 pt-24 relative">
       <div className="space-y-6">
         {visibleUnits.map((unit) => (
-          <div 
+          <div
             key={unit.id} 
             className="bg-bg2 p-6 rounded-lg shadow-orange hover:bg-blue-400 ease-in-out duration-300 relative overflow-hidden"
           >

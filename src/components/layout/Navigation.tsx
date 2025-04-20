@@ -61,7 +61,7 @@ export default function Navigation(){
             
             {/* Mobile hamburger button */}
             <button 
-                className="lg:hidden z-20 relative" 
+                className="md:hidden z-20 relative"
                 onClick={toggleMenu}
                 aria-label="Toggle menu"
             >
@@ -71,7 +71,7 @@ export default function Navigation(){
             </button>
             
             {/* Desktop navigation */}
-            <div className="hidden lg:flex items-center gap-8 text-white text-xl">
+            <div className="hidden md:flex items-center gap-8 text-white text-xl">
                 <Link className={"underline-parent"} href={"/"} >Главная</Link>
                 <Link className={"underline-parent"} href={"/units"} >Юниты</Link>
                 
@@ -86,14 +86,14 @@ export default function Navigation(){
                 {!isLoggedIn && (
                     <>
                         <Link className={"underline-parent"} href={"/auth"} >Регистрация</Link>
-                        <Link href={"/login"} className="px-16 py-3.5 border-bg1 border-2 rounded-xl hover:bg-bg1 hover:text-black duration-300 ease-in-out duration-300 ease-in-out font-medium">Вход</Link>
+                        <Link href={"/login"} className="px-16 py-3.5 border-bg1 border-2 rounded-xl hover:bg-bg1 hover:text-black duration-300 ease-in-out font-medium">Вход</Link>
                     </>
                 )}
             </div>
             
             {/* Mobile navigation overlay */}
             <div 
-                className={`fixed inset-0 bg-[#202020] z-10 flex flex-col items-center justify-center lg:hidden transition-opacity duration-300 ${
+                className={`fixed inset-0 bg-[#202020] z-10 flex flex-col items-center justify-center md:hidden transition-opacity duration-300 ${
                     isMenuOpen ? 'opacity-95 visible' : 'opacity-0 invisible'
                 }`}
                 onClick={(e) => e.stopPropagation()}
@@ -144,7 +144,7 @@ export default function Navigation(){
                                 Регистрация
                             </Link>
                             <Link 
-                                className="px-16 py-3.5 border-bg1 border-2 rounded-xl hover:bg-bg1 hover:text-black w-4/5 text-center" 
+                                className="px-16 py-3.5 border-bg1 border-2 rounded-xl hover:bg-bg1 hover:text-black duration-300 ease-in-out font-medium"
                                 href="/login"
                                 onClick={() => setIsMenuOpen(false)}
                             >

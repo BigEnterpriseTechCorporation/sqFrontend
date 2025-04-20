@@ -68,7 +68,7 @@ export default function DifficultyLevels() {
           </div>
         </div>
       </div>
-      <WaveYellow className="absolute bottom-0 w-full"/>
+      <WaveYellow className="absolute bottom-0 w-full hidden lg:block"/>
     </div>
   );
 } 

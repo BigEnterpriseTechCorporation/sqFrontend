@@ -88,7 +88,7 @@ export default function UnitPage() {
             <div className="flex-grow bg-bg1">
                 <UnitTitle title={unit.title}/>
 
-                <div className="max-w-5xl mx-auto px-4 py-10 mb-10">
+                <div className="max-w-5xl mx-auto px-20 py-10 mb-10">
                     <UnitHeader 
                         ownerName={unit.ownerName} 
                         exerciseCount={unit.exerciseCount} 

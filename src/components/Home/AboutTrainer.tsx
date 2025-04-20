@@ -4,8 +4,8 @@ import WavePink from "@/assets/icons/wave-pink.svg";
 
 export default function AboutTrainer() {
   return (
-    <div className="bg-bg2 min-h-[400px] relative overflow-hidden">
-      <div className="max-w-6xl mx-auto px-4 pt-20 pb-48 flex md:flex-row flex-col items-center justify-between">
+    <div className="bg-bg2 relative overflow-hidden">
+      <div className="max-w-6xl mx-auto lg:px-4 px-20 pt-20 pb-28 lg:pb-48 flex lg:flex-row flex-col gap-y-10 items-center justify-between">
         <div className="max-w-xl">
           <h2 className="text-4xl font-jura mb-6 font-bold">О тренажере</h2>
           <p className="text-md/[170%] font-raleway leading-relaxed">
