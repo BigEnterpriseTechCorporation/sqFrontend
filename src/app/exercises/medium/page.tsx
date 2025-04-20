@@ -347,7 +347,7 @@ export default function MediumExercisePage() {
                       const match = /language-(\w+)/.exec(className || '');
                       return !inline && match ? (
                         <SyntaxHighlighter
-                          // @ts-ignore - Type incompatibility with style prop
+                          // @ts-expect-error - Type incompatibility with style prop
                           style={materialDark}
                           language={match[1]}
                           PreTag="div"
@@ -367,7 +367,7 @@ export default function MediumExercisePage() {
                 </ReactMarkdown>
                 
                 {/* Add input fields for answers */}
-                {currentQuestionData.text.split('______').map((part: string, index: number, array: string[]) => {
+                {currentQuestionData.text.split('______').map((_, index: number, array: string[]) => {
                   return index < array.length - 1 ? (
                     <div key={index} className="my-4">
                       <input
